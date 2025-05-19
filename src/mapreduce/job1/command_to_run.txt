@@ -1,0 +1,4 @@
+cat data/samples/used_cars_1k.csv | \
+python3 src/mapreduce/job1/mapper.py | \
+sort -t$'\t' -k1,1 -k2,2 | \
+python3 src/mapreduce/job1/reducer.py > results/mr_job1_1k_output_local.txt

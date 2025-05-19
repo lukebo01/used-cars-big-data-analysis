@@ -66,7 +66,7 @@ Il file system distribuito di riferimento è HDFS.
 ## Struttura del Repository
 
 ```plaintext
-used-cars-bigdata-project/
+used-cars-bigdata-analysis/
 ├── data/
 │   └── samples/          # Campioni del dataset
 ├── notebooks/            # Jupyter notebooks per EDA

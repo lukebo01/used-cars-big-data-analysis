@@ -1,0 +1,82 @@
+Spark Scalability Benchmark Report
+================================
+
+Date: 2025-05-28 22:03:48
+Input file: data/samples/used_cars_1k.csv
+
+Summary by Job, Engine and Dataset Size:
+-------------------------------------
+
+Job: job1, Engine: core
+| Dataset Size | Input Size (MB) | Records | Time (s) | Records/sec | MB/sec | Memory (MB) |
+|--------------|----------------|---------|----------|-------------|--------|-------------|
+|         1.00% |           0.06 |      10 |     0.25 |       39.29 |   0.24 |        0.00 |
+|         5.00% |           0.27 |      50 |     0.28 |      179.81 |   0.97 |        0.00 |
+|        10.00% |           0.56 |     100 |     0.24 |      411.20 |   2.30 |        0.00 |
+|        25.00% |           1.40 |     272 |     0.24 |     1124.72 |   5.80 |        0.00 |
+|        50.00% |           2.81 |     522 |     0.24 |     2216.78 |  11.95 |        0.00 |
+|       100.00% |           5.54 |    1056 |     0.25 |     4255.72 |  22.34 |        0.00 |
+
+Job: job1, Engine: sql
+| Dataset Size | Input Size (MB) | Records | Time (s) | Records/sec | MB/sec | Memory (MB) |
+|--------------|----------------|---------|----------|-------------|--------|-------------|
+|         1.00% |           0.06 |      10 |     0.25 |       40.75 |   0.25 |        0.00 |
+|         5.00% |           0.27 |      50 |     0.26 |      192.86 |   1.04 |        0.00 |
+|        10.00% |           0.56 |     100 |     0.24 |      411.09 |   2.30 |        0.00 |
+|        25.00% |           1.40 |     272 |     0.23 |     1170.99 |   6.04 |        0.00 |
+|        50.00% |           2.81 |     522 |     0.24 |     2185.28 |  11.78 |        0.00 |
+|       100.00% |           5.54 |    1056 |     0.27 |     3977.02 |  20.87 |        0.00 |
+
+Job: job2, Engine: core
+| Dataset Size | Input Size (MB) | Records | Time (s) | Records/sec | MB/sec | Memory (MB) |
+|--------------|----------------|---------|----------|-------------|--------|-------------|
+|         1.00% |           0.06 |      10 |     0.24 |       41.99 |   0.26 |        0.00 |
+|         5.00% |           0.27 |      50 |     0.25 |      198.88 |   1.07 |        0.00 |
+|        10.00% |           0.56 |     100 |     0.25 |      396.48 |   2.22 |        0.00 |
+|        25.00% |           1.40 |     272 |     0.25 |     1073.22 |   5.54 |        0.00 |
+|        50.00% |           2.81 |     522 |     0.26 |     2000.52 |  10.79 |        0.00 |
+|       100.00% |           5.54 |    1056 |     0.26 |     4125.52 |  21.65 |        0.00 |
+
+Job: job2, Engine: sql
+| Dataset Size | Input Size (MB) | Records | Time (s) | Records/sec | MB/sec | Memory (MB) |
+|--------------|----------------|---------|----------|-------------|--------|-------------|
+|         1.00% |           0.06 |      10 |     0.25 |       40.76 |   0.25 |        0.00 |
+|         5.00% |           0.27 |      50 |     0.24 |      211.59 |   1.14 |        0.00 |
+|        10.00% |           0.56 |     100 |     0.24 |      414.43 |   2.32 |        0.00 |
+|        25.00% |           1.40 |     272 |     0.24 |     1124.08 |   5.80 |        0.00 |
+|        50.00% |           2.81 |     522 |     0.24 |     2167.44 |  11.69 |        0.00 |
+|       100.00% |           5.54 |    1056 |     0.27 |     3943.58 |  20.70 |        0.00 |
+
+
+Scalability Analysis:
+---------------------
+
+Job job1 with CORE engine:
+- Dataset size increased by a factor of 100.00x
+- Execution time increased by a factor of 0.97x
+- The job scales SUB-linearly (good scaling properties)
+
+Job job1 with SQL engine:
+- Dataset size increased by a factor of 100.00x
+- Execution time increased by a factor of 1.08x
+- The job scales SUB-linearly (good scaling properties)
+
+Engine comparison for Job job1 at 100% data size:
+- Spark Core: 0.25s, 4255.72 records/sec
+- Spark SQL: 0.27s, 3977.02 records/sec
+- Spark Core is 1.07x faster than Spark SQL
+
+Job job2 with CORE engine:
+- Dataset size increased by a factor of 100.00x
+- Execution time increased by a factor of 1.07x
+- The job scales SUB-linearly (good scaling properties)
+
+Job job2 with SQL engine:
+- Dataset size increased by a factor of 100.00x
+- Execution time increased by a factor of 1.09x
+- The job scales SUB-linearly (good scaling properties)
+
+Engine comparison for Job job2 at 100% data size:
+- Spark Core: 0.26s, 4125.52 records/sec
+- Spark SQL: 0.27s, 3943.58 records/sec
+- Spark Core is 1.05x faster than Spark SQL

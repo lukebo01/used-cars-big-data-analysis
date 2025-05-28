@@ -1,0 +1,481 @@
+25/05/28 22:43:22 WARN Utils: Your hostname, ALFRED resolves to a loopback address: 127.0.1.1; using 192.168.1.148 instead (on interface wlp0s20f3)
+25/05/28 22:43:22 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+25/05/28 22:43:23 INFO SparkContext: Running Spark version 3.5.5
+25/05/28 22:43:23 INFO SparkContext: OS info Linux, 6.11.0-25-generic, amd64
+25/05/28 22:43:23 INFO SparkContext: Java version 17.0.15
+25/05/28 22:43:23 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+25/05/28 22:43:23 INFO ResourceUtils: ==============================================================
+25/05/28 22:43:23 INFO ResourceUtils: No custom resources configured for spark.driver.
+25/05/28 22:43:23 INFO ResourceUtils: ==============================================================
+25/05/28 22:43:23 INFO SparkContext: Submitted application: UsedCarsReport_Job2_SQL
+25/05/28 22:43:23 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+25/05/28 22:43:23 INFO ResourceProfile: Limiting resource is cpu
+25/05/28 22:43:23 INFO ResourceProfileManager: Added ResourceProfile id: 0
+25/05/28 22:43:23 INFO SecurityManager: Changing view acls to: luke
+25/05/28 22:43:23 INFO SecurityManager: Changing modify acls to: luke
+25/05/28 22:43:23 INFO SecurityManager: Changing view acls groups to: 
+25/05/28 22:43:23 INFO SecurityManager: Changing modify acls groups to: 
+25/05/28 22:43:23 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: luke; groups with view permissions: EMPTY; users with modify permissions: luke; groups with modify permissions: EMPTY
+25/05/28 22:43:23 INFO Utils: Successfully started service 'sparkDriver' on port 35025.
+25/05/28 22:43:23 INFO SparkEnv: Registering MapOutputTracker
+25/05/28 22:43:23 INFO SparkEnv: Registering BlockManagerMaster
+25/05/28 22:43:23 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+25/05/28 22:43:23 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+25/05/28 22:43:23 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+25/05/28 22:43:23 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-4145be8c-195b-4b2f-b96e-8d5085bcca7e
+25/05/28 22:43:24 INFO MemoryStore: MemoryStore started with capacity 434.4 MiB
+25/05/28 22:43:24 INFO SparkEnv: Registering OutputCommitCoordinator
+25/05/28 22:43:24 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+25/05/28 22:43:24 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+25/05/28 22:43:24 INFO Executor: Starting executor ID driver on host ALFRED.wind3.hub
+25/05/28 22:43:24 INFO Executor: OS info Linux, 6.11.0-25-generic, amd64
+25/05/28 22:43:24 INFO Executor: Java version 17.0.15
+25/05/28 22:43:24 INFO Executor: Starting executor with user classpath (userClassPathFirst = false): ''
+25/05/28 22:43:24 INFO Executor: Created or updated repl class loader org.apache.spark.util.MutableURLClassLoader@35fb6768 for default.
+25/05/28 22:43:24 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 34811.
+25/05/28 22:43:24 INFO NettyBlockTransferService: Server created on ALFRED.wind3.hub:34811
+25/05/28 22:43:24 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+25/05/28 22:43:24 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, ALFRED.wind3.hub, 34811, None)
+25/05/28 22:43:24 INFO BlockManagerMasterEndpoint: Registering block manager ALFRED.wind3.hub:34811 with 434.4 MiB RAM, BlockManagerId(driver, ALFRED.wind3.hub, 34811, None)
+25/05/28 22:43:24 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, ALFRED.wind3.hub, 34811, None)
+25/05/28 22:43:24 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, ALFRED.wind3.hub, 34811, None)
+25/05/28 22:43:24 INFO SharedState: Setting hive.metastore.warehouse.dir ('null') to the value of spark.sql.warehouse.dir.
+25/05/28 22:43:24 INFO SharedState: Warehouse path is 'file:/media/luke/LUKE-DISK-3/used-cars-big-data-analysis/spark-warehouse'.
+25/05/28 22:43:25 INFO InMemoryFileIndex: It took 39 ms to list leaf files for 1 paths.
+25/05/28 22:43:25 INFO InMemoryFileIndex: It took 2 ms to list leaf files for 1 paths.
+25/05/28 22:43:27 INFO FileSourceStrategy: Pushed Filters: 
+25/05/28 22:43:27 INFO FileSourceStrategy: Post-Scan Filters: (length(trim(value#0, None)) > 0)
+25/05/28 22:43:27 INFO CodeGenerator: Code generated in 197.005632 ms
+25/05/28 22:43:27 INFO MemoryStore: Block broadcast_0 stored as values in memory (estimated size 199.8 KiB, free 434.2 MiB)
+25/05/28 22:43:27 INFO MemoryStore: Block broadcast_0_piece0 stored as bytes in memory (estimated size 34.4 KiB, free 434.2 MiB)
+25/05/28 22:43:27 INFO BlockManagerInfo: Added broadcast_0_piece0 in memory on ALFRED.wind3.hub:34811 (size: 34.4 KiB, free: 434.4 MiB)
+25/05/28 22:43:27 INFO SparkContext: Created broadcast 0 from csv at NativeMethodAccessorImpl.java:0
+25/05/28 22:43:27 INFO FileSourceScanExec: Planning scan with bin packing, max size: 4194304 bytes, open cost is considered as scanning 4194304 bytes.
+25/05/28 22:43:27 INFO SparkContext: Starting job: csv at NativeMethodAccessorImpl.java:0
+25/05/28 22:43:27 INFO DAGScheduler: Got job 0 (csv at NativeMethodAccessorImpl.java:0) with 1 output partitions
+25/05/28 22:43:27 INFO DAGScheduler: Final stage: ResultStage 0 (csv at NativeMethodAccessorImpl.java:0)
+25/05/28 22:43:27 INFO DAGScheduler: Parents of final stage: List()
+25/05/28 22:43:27 INFO DAGScheduler: Missing parents: List()
+25/05/28 22:43:27 INFO DAGScheduler: Submitting ResultStage 0 (MapPartitionsRDD[3] at csv at NativeMethodAccessorImpl.java:0), which has no missing parents
+25/05/28 22:43:27 INFO MemoryStore: Block broadcast_1 stored as values in memory (estimated size 13.5 KiB, free 434.2 MiB)
+25/05/28 22:43:27 INFO MemoryStore: Block broadcast_1_piece0 stored as bytes in memory (estimated size 6.4 KiB, free 434.2 MiB)
+25/05/28 22:43:27 INFO BlockManagerInfo: Added broadcast_1_piece0 in memory on ALFRED.wind3.hub:34811 (size: 6.4 KiB, free: 434.4 MiB)
+25/05/28 22:43:27 INFO SparkContext: Created broadcast 1 from broadcast at DAGScheduler.scala:1585
+25/05/28 22:43:27 INFO DAGScheduler: Submitting 1 missing tasks from ResultStage 0 (MapPartitionsRDD[3] at csv at NativeMethodAccessorImpl.java:0) (first 15 tasks are for partitions Vector(0))
+25/05/28 22:43:27 INFO TaskSchedulerImpl: Adding task set 0.0 with 1 tasks resource profile 0
+25/05/28 22:43:27 INFO TaskSetManager: Starting task 0.0 in stage 0.0 (TID 0) (ALFRED.wind3.hub, executor driver, partition 0, PROCESS_LOCAL, 9650 bytes) 
+25/05/28 22:43:28 INFO Executor: Running task 0.0 in stage 0.0 (TID 0)
+25/05/28 22:43:28 INFO CodeGenerator: Code generated in 17.087383 ms
+25/05/28 22:43:28 INFO FileScanRDD: Reading File path: file:///media/luke/LUKE-DISK-3/used-cars-big-data-analysis/data/samples/used_cars_1k.csv, range: 0-4194304, partition values: [empty row]
+25/05/28 22:43:28 INFO CodeGenerator: Code generated in 12.777745 ms
+25/05/28 22:43:28 INFO Executor: Finished task 0.0 in stage 0.0 (TID 0). 2595 bytes result sent to driver
+25/05/28 22:43:28 INFO TaskSetManager: Finished task 0.0 in stage 0.0 (TID 0) in 230 ms on ALFRED.wind3.hub (executor driver) (1/1)
+25/05/28 22:43:28 INFO TaskSchedulerImpl: Removed TaskSet 0.0, whose tasks have all completed, from pool 
+25/05/28 22:43:28 INFO DAGScheduler: ResultStage 0 (csv at NativeMethodAccessorImpl.java:0) finished in 0,381 s
+25/05/28 22:43:28 INFO DAGScheduler: Job 0 is finished. Cancelling potential speculative or zombie tasks for this job
+25/05/28 22:43:28 INFO TaskSchedulerImpl: Killing all running tasks in stage 0: Stage finished
+25/05/28 22:43:28 INFO DAGScheduler: Job 0 finished: csv at NativeMethodAccessorImpl.java:0, took 0,421376 s
+25/05/28 22:43:28 INFO CodeGenerator: Code generated in 12.456058 ms
+25/05/28 22:43:28 INFO BlockManagerInfo: Removed broadcast_1_piece0 on ALFRED.wind3.hub:34811 in memory (size: 6.4 KiB, free: 434.4 MiB)
+25/05/28 22:43:28 INFO FileSourceStrategy: Pushed Filters: 
+25/05/28 22:43:28 INFO FileSourceStrategy: Post-Scan Filters: 
+25/05/28 22:43:28 INFO MemoryStore: Block broadcast_2 stored as values in memory (estimated size 199.8 KiB, free 434.0 MiB)
+25/05/28 22:43:28 INFO MemoryStore: Block broadcast_2_piece0 stored as bytes in memory (estimated size 34.4 KiB, free 433.9 MiB)
+25/05/28 22:43:28 INFO BlockManagerInfo: Added broadcast_2_piece0 in memory on ALFRED.wind3.hub:34811 (size: 34.4 KiB, free: 434.3 MiB)
+25/05/28 22:43:28 INFO SparkContext: Created broadcast 2 from csv at NativeMethodAccessorImpl.java:0
+25/05/28 22:43:28 INFO FileSourceScanExec: Planning scan with bin packing, max size: 4194304 bytes, open cost is considered as scanning 4194304 bytes.
+25/05/28 22:43:28 INFO BlockManagerInfo: Removed broadcast_0_piece0 on ALFRED.wind3.hub:34811 in memory (size: 34.4 KiB, free: 434.4 MiB)
+25/05/28 22:43:29 INFO FileSourceStrategy: Pushed Filters: IsNotNull(city),IsNotNull(year),IsNotNull(price),IsNotNull(daysonmarket)
+25/05/28 22:43:29 INFO FileSourceStrategy: Post-Scan Filters: isnotnull(city#20),isnotnull(year#73),isnotnull(price#57),isnotnull(daysonmarket#22),isnotnull(lower(city#20)),NOT (lower(city#20) = ),isnotnull(cast(cast(year#73 as float) as int)),(cast(cast(year#73 as float) as int) >= 1900),(cast(cast(year#73 as float) as int) <= 2025),isnotnull(cast(price#57 as float)),(cast(price#57 as float) > 0.0),isnotnull(cast(daysonmarket#22 as int)),(cast(daysonmarket#22 as int) >= 0)
+25/05/28 22:43:29 INFO CodeGenerator: Code generated in 33.905368 ms
+25/05/28 22:43:29 INFO CodeGenerator: Code generated in 61.615305 ms
+25/05/28 22:43:29 INFO MemoryStore: Block broadcast_3 stored as values in memory (estimated size 199.6 KiB, free 434.0 MiB)
+25/05/28 22:43:29 INFO MemoryStore: Block broadcast_3_piece0 stored as bytes in memory (estimated size 34.3 KiB, free 433.9 MiB)
+25/05/28 22:43:29 INFO BlockManagerInfo: Added broadcast_3_piece0 in memory on ALFRED.wind3.hub:34811 (size: 34.3 KiB, free: 434.3 MiB)
+25/05/28 22:43:29 INFO SparkContext: Created broadcast 3 from text at NativeMethodAccessorImpl.java:0
+25/05/28 22:43:29 INFO FileSourceScanExec: Planning scan with bin packing, max size: 4194304 bytes, open cost is considered as scanning 4194304 bytes.
+25/05/28 22:43:29 INFO DAGScheduler: Registering RDD 17 (text at NativeMethodAccessorImpl.java:0) as input to shuffle 0
+25/05/28 22:43:29 INFO DAGScheduler: Got map stage job 1 (text at NativeMethodAccessorImpl.java:0) with 2 output partitions
+25/05/28 22:43:29 INFO DAGScheduler: Final stage: ShuffleMapStage 1 (text at NativeMethodAccessorImpl.java:0)
+25/05/28 22:43:29 INFO DAGScheduler: Parents of final stage: List()
+25/05/28 22:43:29 INFO DAGScheduler: Missing parents: List()
+25/05/28 22:43:29 INFO DAGScheduler: Submitting ShuffleMapStage 1 (MapPartitionsRDD[17] at text at NativeMethodAccessorImpl.java:0), which has no missing parents
+25/05/28 22:43:29 INFO MemoryStore: Block broadcast_4 stored as values in memory (estimated size 64.5 KiB, free 433.9 MiB)
+25/05/28 22:43:29 INFO MemoryStore: Block broadcast_4_piece0 stored as bytes in memory (estimated size 28.6 KiB, free 433.9 MiB)
+25/05/28 22:43:29 INFO BlockManagerInfo: Added broadcast_4_piece0 in memory on ALFRED.wind3.hub:34811 (size: 28.6 KiB, free: 434.3 MiB)
+25/05/28 22:43:29 INFO SparkContext: Created broadcast 4 from broadcast at DAGScheduler.scala:1585
+25/05/28 22:43:29 INFO DAGScheduler: Submitting 2 missing tasks from ShuffleMapStage 1 (MapPartitionsRDD[17] at text at NativeMethodAccessorImpl.java:0) (first 15 tasks are for partitions Vector(0, 1))
+25/05/28 22:43:29 INFO TaskSchedulerImpl: Adding task set 1.0 with 2 tasks resource profile 0
+25/05/28 22:43:29 INFO TaskSetManager: Starting task 0.0 in stage 1.0 (TID 1) (ALFRED.wind3.hub, executor driver, partition 0, PROCESS_LOCAL, 9639 bytes) 
+25/05/28 22:43:29 INFO TaskSetManager: Starting task 1.0 in stage 1.0 (TID 2) (ALFRED.wind3.hub, executor driver, partition 1, PROCESS_LOCAL, 9639 bytes) 
+25/05/28 22:43:29 INFO Executor: Running task 0.0 in stage 1.0 (TID 1)
+25/05/28 22:43:29 INFO Executor: Running task 1.0 in stage 1.0 (TID 2)
+25/05/28 22:43:29 INFO CodeGenerator: Code generated in 60.885555 ms
+25/05/28 22:43:29 INFO CodeGenerator: Code generated in 14.161343 ms
+25/05/28 22:43:30 INFO FileScanRDD: Reading File path: file:///media/luke/LUKE-DISK-3/used-cars-big-data-analysis/data/samples/used_cars_1k.csv, range: 0-4194304, partition values: [empty row]
+25/05/28 22:43:30 INFO FileScanRDD: Reading File path: file:///media/luke/LUKE-DISK-3/used-cars-big-data-analysis/data/samples/used_cars_1k.csv, range: 4194304-5813377, partition values: [empty row]
+25/05/28 22:43:30 INFO CodeGenerator: Code generated in 11.010822 ms
+25/05/28 22:43:30 INFO CodeGenerator: Code generated in 11.658406 ms
+25/05/28 22:43:30 INFO CodeGenerator: Code generated in 19.350779 ms
+25/05/28 22:43:30 INFO CodeGenerator: Code generated in 5.574251 ms
+25/05/28 22:43:30 INFO CodeGenerator: Code generated in 4.751973 ms
+25/05/28 22:43:30 INFO CodeGenerator: Code generated in 5.097969 ms
+25/05/28 22:43:30 INFO CodeGenerator: Code generated in 5.144609 ms
+25/05/28 22:43:30 INFO BlockManagerInfo: Removed broadcast_2_piece0 on ALFRED.wind3.hub:34811 in memory (size: 34.4 KiB, free: 434.3 MiB)
+25/05/28 22:43:30 INFO CodeGenerator: Code generated in 13.406165 ms
+25/05/28 22:43:30 INFO CodeGenerator: Code generated in 18.875966 ms
+25/05/28 22:43:30 INFO CodeGenerator: Code generated in 18.908822 ms
+25/05/28 22:43:30 INFO CodeGenerator: Code generated in 11.299888 ms
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 8.916333 ms
+25/05/28 22:43:31 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:31 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 11.258494 ms
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 13.079146 ms
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 6.796499 ms
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 7.48385 ms
+25/05/28 22:43:31 INFO PythonUDFRunner: Times: total = 1074, boot = 725, init = 210, finish = 139
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 13.329475 ms
+25/05/28 22:43:31 INFO PythonUDFRunner: Times: total = 1244, boot = 727, init = 187, finish = 330
+25/05/28 22:43:31 INFO Executor: Finished task 1.0 in stage 1.0 (TID 2). 3392 bytes result sent to driver
+25/05/28 22:43:31 INFO TaskSetManager: Finished task 1.0 in stage 1.0 (TID 2) in 1709 ms on ALFRED.wind3.hub (executor driver) (1/2)
+25/05/28 22:43:31 INFO PythonAccumulatorV2: Connected to AccumulatorServer at host: 127.0.0.1 port: 37763
+25/05/28 22:43:31 INFO Executor: Finished task 0.0 in stage 1.0 (TID 1). 3349 bytes result sent to driver
+25/05/28 22:43:31 INFO TaskSetManager: Finished task 0.0 in stage 1.0 (TID 1) in 1761 ms on ALFRED.wind3.hub (executor driver) (2/2)
+25/05/28 22:43:31 INFO TaskSchedulerImpl: Removed TaskSet 1.0, whose tasks have all completed, from pool 
+25/05/28 22:43:31 INFO DAGScheduler: ShuffleMapStage 1 (text at NativeMethodAccessorImpl.java:0) finished in 1,801 s
+25/05/28 22:43:31 INFO DAGScheduler: looking for newly runnable stages
+25/05/28 22:43:31 INFO DAGScheduler: running: Set()
+25/05/28 22:43:31 INFO DAGScheduler: waiting: Set()
+25/05/28 22:43:31 INFO DAGScheduler: failed: Set()
+25/05/28 22:43:31 INFO ShufflePartitionsUtil: For shuffle(0), advisory target size: 67108864, actual target size 1048576, minimum partition size: 1048576
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 13.411656 ms
+25/05/28 22:43:31 INFO DAGScheduler: Registering RDD 24 (text at NativeMethodAccessorImpl.java:0) as input to shuffle 1
+25/05/28 22:43:31 INFO DAGScheduler: Got map stage job 2 (text at NativeMethodAccessorImpl.java:0) with 2 output partitions
+25/05/28 22:43:31 INFO DAGScheduler: Final stage: ShuffleMapStage 3 (text at NativeMethodAccessorImpl.java:0)
+25/05/28 22:43:31 INFO DAGScheduler: Parents of final stage: List(ShuffleMapStage 2)
+25/05/28 22:43:31 INFO DAGScheduler: Missing parents: List()
+25/05/28 22:43:31 INFO DAGScheduler: Submitting ShuffleMapStage 3 (MapPartitionsRDD[24] at text at NativeMethodAccessorImpl.java:0), which has no missing parents
+25/05/28 22:43:31 INFO MemoryStore: Block broadcast_5 stored as values in memory (estimated size 74.4 KiB, free 434.0 MiB)
+25/05/28 22:43:31 INFO MemoryStore: Block broadcast_5_piece0 stored as bytes in memory (estimated size 33.1 KiB, free 434.0 MiB)
+25/05/28 22:43:31 INFO BlockManagerInfo: Added broadcast_5_piece0 in memory on ALFRED.wind3.hub:34811 (size: 33.1 KiB, free: 434.3 MiB)
+25/05/28 22:43:31 INFO SparkContext: Created broadcast 5 from broadcast at DAGScheduler.scala:1585
+25/05/28 22:43:31 INFO DAGScheduler: Submitting 2 missing tasks from ShuffleMapStage 3 (MapPartitionsRDD[24] at text at NativeMethodAccessorImpl.java:0) (first 15 tasks are for partitions Vector(0, 1))
+25/05/28 22:43:31 INFO TaskSchedulerImpl: Adding task set 3.0 with 2 tasks resource profile 0
+25/05/28 22:43:31 INFO TaskSetManager: Starting task 0.0 in stage 3.0 (TID 3) (ALFRED.wind3.hub, executor driver, partition 0, NODE_LOCAL, 8988 bytes) 
+25/05/28 22:43:31 INFO TaskSetManager: Starting task 1.0 in stage 3.0 (TID 4) (ALFRED.wind3.hub, executor driver, partition 1, NODE_LOCAL, 8988 bytes) 
+25/05/28 22:43:31 INFO Executor: Running task 0.0 in stage 3.0 (TID 3)
+25/05/28 22:43:31 INFO Executor: Running task 1.0 in stage 3.0 (TID 4)
+25/05/28 22:43:31 INFO ShuffleBlockFetcherIterator: Getting 2 (1027.7 KiB) non-empty blocks including 2 (1027.7 KiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+25/05/28 22:43:31 INFO ShuffleBlockFetcherIterator: Getting 2 (1336.5 KiB) non-empty blocks including 2 (1336.5 KiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+25/05/28 22:43:31 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 11 ms
+25/05/28 22:43:31 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 11 ms
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 8.563601 ms
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 6.448883 ms
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 6.416348 ms
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 10.351075 ms
+25/05/28 22:43:31 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:31 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 5.439937 ms
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 16.568668 ms
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 14.64702 ms
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 5.681139 ms
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 5.936764 ms
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 7.907197 ms
+25/05/28 22:43:31 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:31 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 4.824619 ms
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 4.449452 ms
+25/05/28 22:43:31 INFO CodeGenerator: Code generated in 7.905677 ms
+25/05/28 22:43:32 INFO PythonUDFRunner: Times: total = 232, boot = -768, init = 912, finish = 88
+25/05/28 22:43:32 INFO PythonUDFRunner: Times: total = 253, boot = -602, init = 748, finish = 107
+25/05/28 22:43:32 INFO CodeGenerator: Code generated in 7.639659 ms
+25/05/28 22:43:32 INFO Executor: Finished task 0.0 in stage 3.0 (TID 3). 6536 bytes result sent to driver
+25/05/28 22:43:32 INFO Executor: Finished task 1.0 in stage 3.0 (TID 4). 6536 bytes result sent to driver
+25/05/28 22:43:32 INFO TaskSetManager: Finished task 0.0 in stage 3.0 (TID 3) in 499 ms on ALFRED.wind3.hub (executor driver) (1/2)
+25/05/28 22:43:32 INFO TaskSetManager: Finished task 1.0 in stage 3.0 (TID 4) in 499 ms on ALFRED.wind3.hub (executor driver) (2/2)
+25/05/28 22:43:32 INFO TaskSchedulerImpl: Removed TaskSet 3.0, whose tasks have all completed, from pool 
+25/05/28 22:43:32 INFO DAGScheduler: ShuffleMapStage 3 (text at NativeMethodAccessorImpl.java:0) finished in 0,518 s
+25/05/28 22:43:32 INFO DAGScheduler: looking for newly runnable stages
+25/05/28 22:43:32 INFO DAGScheduler: running: Set()
+25/05/28 22:43:32 INFO DAGScheduler: waiting: Set()
+25/05/28 22:43:32 INFO DAGScheduler: failed: Set()
+25/05/28 22:43:32 INFO ShufflePartitionsUtil: For shuffle(1), advisory target size: 67108864, actual target size 1048576, minimum partition size: 1048576
+25/05/28 22:43:32 INFO CodeGenerator: Code generated in 6.128662 ms
+25/05/28 22:43:32 INFO CodeGenerator: Code generated in 4.072937 ms
+25/05/28 22:43:32 INFO SparkContext: Starting job: text at NativeMethodAccessorImpl.java:0
+25/05/28 22:43:32 INFO DAGScheduler: Got job 3 (text at NativeMethodAccessorImpl.java:0) with 1 output partitions
+25/05/28 22:43:32 INFO DAGScheduler: Final stage: ResultStage 6 (text at NativeMethodAccessorImpl.java:0)
+25/05/28 22:43:32 INFO DAGScheduler: Parents of final stage: List(ShuffleMapStage 5)
+25/05/28 22:43:32 INFO DAGScheduler: Missing parents: List()
+25/05/28 22:43:32 INFO DAGScheduler: Submitting ResultStage 6 (MapPartitionsRDD[32] at text at NativeMethodAccessorImpl.java:0), which has no missing parents
+25/05/28 22:43:32 INFO MemoryStore: Block broadcast_6 stored as values in memory (estimated size 80.7 KiB, free 433.9 MiB)
+25/05/28 22:43:32 INFO MemoryStore: Block broadcast_6_piece0 stored as bytes in memory (estimated size 35.6 KiB, free 433.9 MiB)
+25/05/28 22:43:32 INFO BlockManagerInfo: Added broadcast_6_piece0 in memory on ALFRED.wind3.hub:34811 (size: 35.6 KiB, free: 434.3 MiB)
+25/05/28 22:43:32 INFO SparkContext: Created broadcast 6 from broadcast at DAGScheduler.scala:1585
+25/05/28 22:43:32 INFO DAGScheduler: Submitting 1 missing tasks from ResultStage 6 (MapPartitionsRDD[32] at text at NativeMethodAccessorImpl.java:0) (first 15 tasks are for partitions Vector(0))
+25/05/28 22:43:32 INFO TaskSchedulerImpl: Adding task set 6.0 with 1 tasks resource profile 0
+25/05/28 22:43:32 INFO TaskSetManager: Starting task 0.0 in stage 6.0 (TID 5) (ALFRED.wind3.hub, executor driver, partition 0, NODE_LOCAL, 8999 bytes) 
+25/05/28 22:43:32 INFO Executor: Running task 0.0 in stage 6.0 (TID 5)
+25/05/28 22:43:32 INFO ShuffleBlockFetcherIterator: Getting 2 (69.6 KiB) non-empty blocks including 2 (69.6 KiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+25/05/28 22:43:32 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 1 ms
+25/05/28 22:43:32 INFO CodeGenerator: Code generated in 7.415182 ms
+25/05/28 22:43:32 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:32 INFO CodeGenerator: Code generated in 6.451001 ms
+25/05/28 22:43:32 INFO CodeGenerator: Code generated in 13.243827 ms
+25/05/28 22:43:32 INFO CodeGenerator: Code generated in 4.977088 ms
+25/05/28 22:43:32 INFO PythonUDFRunner: Times: total = 108, boot = -290, init = 389, finish = 9
+25/05/28 22:43:32 INFO Executor: Finished task 0.0 in stage 6.0 (TID 5). 152048 bytes result sent to driver
+25/05/28 22:43:32 INFO TaskSetManager: Finished task 0.0 in stage 6.0 (TID 5) in 174 ms on ALFRED.wind3.hub (executor driver) (1/1)
+25/05/28 22:43:32 INFO TaskSchedulerImpl: Removed TaskSet 6.0, whose tasks have all completed, from pool 
+25/05/28 22:43:32 INFO DAGScheduler: ResultStage 6 (text at NativeMethodAccessorImpl.java:0) finished in 0,185 s
+25/05/28 22:43:32 INFO DAGScheduler: Job 3 is finished. Cancelling potential speculative or zombie tasks for this job
+25/05/28 22:43:32 INFO TaskSchedulerImpl: Killing all running tasks in stage 6: Stage finished
+25/05/28 22:43:32 INFO DAGScheduler: Job 3 finished: text at NativeMethodAccessorImpl.java:0, took 0,200593 s
+25/05/28 22:43:32 INFO DAGScheduler: Registering RDD 33 (text at NativeMethodAccessorImpl.java:0) as input to shuffle 2
+25/05/28 22:43:32 INFO DAGScheduler: Got map stage job 4 (text at NativeMethodAccessorImpl.java:0) with 1 output partitions
+25/05/28 22:43:32 INFO DAGScheduler: Final stage: ShuffleMapStage 9 (text at NativeMethodAccessorImpl.java:0)
+25/05/28 22:43:32 INFO DAGScheduler: Parents of final stage: List(ShuffleMapStage 8)
+25/05/28 22:43:32 INFO DAGScheduler: Missing parents: List()
+25/05/28 22:43:32 INFO DAGScheduler: Submitting ShuffleMapStage 9 (MapPartitionsRDD[33] at text at NativeMethodAccessorImpl.java:0), which has no missing parents
+25/05/28 22:43:32 INFO MemoryStore: Block broadcast_7 stored as values in memory (estimated size 143.3 KiB, free 433.7 MiB)
+25/05/28 22:43:32 INFO MemoryStore: Block broadcast_7_piece0 stored as bytes in memory (estimated size 45.5 KiB, free 433.7 MiB)
+25/05/28 22:43:32 INFO BlockManagerInfo: Added broadcast_7_piece0 in memory on ALFRED.wind3.hub:34811 (size: 45.5 KiB, free: 434.2 MiB)
+25/05/28 22:43:32 INFO SparkContext: Created broadcast 7 from broadcast at DAGScheduler.scala:1585
+25/05/28 22:43:32 INFO DAGScheduler: Submitting 1 missing tasks from ShuffleMapStage 9 (MapPartitionsRDD[33] at text at NativeMethodAccessorImpl.java:0) (first 15 tasks are for partitions Vector(0))
+25/05/28 22:43:32 INFO TaskSchedulerImpl: Adding task set 9.0 with 1 tasks resource profile 0
+25/05/28 22:43:32 INFO TaskSetManager: Starting task 0.0 in stage 9.0 (TID 6) (ALFRED.wind3.hub, executor driver, partition 0, NODE_LOCAL, 8988 bytes) 
+25/05/28 22:43:32 INFO Executor: Running task 0.0 in stage 9.0 (TID 6)
+25/05/28 22:43:32 INFO CodeGenerator: Code generated in 5.955708 ms
+25/05/28 22:43:32 INFO ShuffleBlockFetcherIterator: Getting 2 (69.6 KiB) non-empty blocks including 2 (69.6 KiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+25/05/28 22:43:32 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 1 ms
+25/05/28 22:43:32 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:32 INFO PythonUDFRunner: Times: total = 127, boot = -489, init = 604, finish = 12
+25/05/28 22:43:32 INFO BlockManagerInfo: Removed broadcast_6_piece0 on ALFRED.wind3.hub:34811 in memory (size: 35.6 KiB, free: 434.3 MiB)
+25/05/28 22:43:32 INFO BlockManagerInfo: Removed broadcast_5_piece0 on ALFRED.wind3.hub:34811 in memory (size: 33.1 KiB, free: 434.3 MiB)
+25/05/28 22:43:32 INFO Executor: Finished task 0.0 in stage 9.0 (TID 6). 8384 bytes result sent to driver
+25/05/28 22:43:32 INFO TaskSetManager: Finished task 0.0 in stage 9.0 (TID 6) in 246 ms on ALFRED.wind3.hub (executor driver) (1/1)
+25/05/28 22:43:32 INFO TaskSchedulerImpl: Removed TaskSet 9.0, whose tasks have all completed, from pool 
+25/05/28 22:43:32 INFO DAGScheduler: ShuffleMapStage 9 (text at NativeMethodAccessorImpl.java:0) finished in 0,262 s
+25/05/28 22:43:32 INFO DAGScheduler: looking for newly runnable stages
+25/05/28 22:43:32 INFO DAGScheduler: running: Set()
+25/05/28 22:43:32 INFO DAGScheduler: waiting: Set()
+25/05/28 22:43:32 INFO DAGScheduler: failed: Set()
+25/05/28 22:43:32 INFO ShufflePartitionsUtil: For shuffle(2), advisory target size: 67108864, actual target size 1048576, minimum partition size: 1048576
+25/05/28 22:43:32 INFO FileOutputCommitter: File Output Committer Algorithm version is 1
+25/05/28 22:43:32 INFO FileOutputCommitter: FileOutputCommitter skip cleanup _temporary folders under output directory:false, ignore cleanup failures: false
+25/05/28 22:43:32 INFO SQLHadoopMapReduceCommitProtocol: Using output committer class org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter
+25/05/28 22:43:32 INFO CodeGenerator: Code generated in 13.112001 ms
+25/05/28 22:43:32 INFO SparkContext: Starting job: text at NativeMethodAccessorImpl.java:0
+25/05/28 22:43:32 INFO DAGScheduler: Got job 5 (text at NativeMethodAccessorImpl.java:0) with 1 output partitions
+25/05/28 22:43:32 INFO DAGScheduler: Final stage: ResultStage 13 (text at NativeMethodAccessorImpl.java:0)
+25/05/28 22:43:32 INFO DAGScheduler: Parents of final stage: List(ShuffleMapStage 12)
+25/05/28 22:43:32 INFO DAGScheduler: Missing parents: List()
+25/05/28 22:43:32 INFO DAGScheduler: Submitting ResultStage 13 (MapPartitionsRDD[37] at text at NativeMethodAccessorImpl.java:0), which has no missing parents
+25/05/28 22:43:32 INFO MemoryStore: Block broadcast_8 stored as values in memory (estimated size 283.3 KiB, free 433.6 MiB)
+25/05/28 22:43:32 INFO MemoryStore: Block broadcast_8_piece0 stored as bytes in memory (estimated size 106.2 KiB, free 433.5 MiB)
+25/05/28 22:43:32 INFO BlockManagerInfo: Added broadcast_8_piece0 in memory on ALFRED.wind3.hub:34811 (size: 106.2 KiB, free: 434.2 MiB)
+25/05/28 22:43:32 INFO SparkContext: Created broadcast 8 from broadcast at DAGScheduler.scala:1585
+25/05/28 22:43:32 INFO DAGScheduler: Submitting 1 missing tasks from ResultStage 13 (MapPartitionsRDD[37] at text at NativeMethodAccessorImpl.java:0) (first 15 tasks are for partitions Vector(0))
+25/05/28 22:43:32 INFO TaskSchedulerImpl: Adding task set 13.0 with 1 tasks resource profile 0
+25/05/28 22:43:32 INFO TaskSetManager: Starting task 0.0 in stage 13.0 (TID 7) (ALFRED.wind3.hub, executor driver, partition 0, NODE_LOCAL, 9275 bytes) 
+25/05/28 22:43:32 INFO Executor: Running task 0.0 in stage 13.0 (TID 7)
+25/05/28 22:43:32 INFO FileOutputCommitter: File Output Committer Algorithm version is 1
+25/05/28 22:43:32 INFO FileOutputCommitter: FileOutputCommitter skip cleanup _temporary folders under output directory:false, ignore cleanup failures: false
+25/05/28 22:43:32 INFO SQLHadoopMapReduceCommitProtocol: Using output committer class org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter
+25/05/28 22:43:32 INFO ShuffleBlockFetcherIterator: Getting 1 (60.6 KiB) non-empty blocks including 1 (60.6 KiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+25/05/28 22:43:32 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 1 ms
+25/05/28 22:43:32 INFO CodeGenerator: Code generated in 10.472893 ms
+25/05/28 22:43:32 INFO FileOutputCommitter: Saved output of task 'attempt_202505282243327334602867874917077_0013_m_000000_7' to file:/media/luke/LUKE-DISK-3/used-cars-big-data-analysis/results/spark_sql/job2_df_output_parts_text/_temporary/0/task_202505282243327334602867874917077_0013_m_000000
+25/05/28 22:43:32 INFO SparkHadoopMapRedUtil: attempt_202505282243327334602867874917077_0013_m_000000_7: Committed. Elapsed time: 1 ms.
+25/05/28 22:43:32 INFO Executor: Finished task 0.0 in stage 13.0 (TID 7). 10622 bytes result sent to driver
+25/05/28 22:43:32 INFO TaskSetManager: Finished task 0.0 in stage 13.0 (TID 7) in 122 ms on ALFRED.wind3.hub (executor driver) (1/1)
+25/05/28 22:43:32 INFO TaskSchedulerImpl: Removed TaskSet 13.0, whose tasks have all completed, from pool 
+25/05/28 22:43:32 INFO DAGScheduler: ResultStage 13 (text at NativeMethodAccessorImpl.java:0) finished in 0,155 s
+25/05/28 22:43:32 INFO DAGScheduler: Job 5 is finished. Cancelling potential speculative or zombie tasks for this job
+25/05/28 22:43:32 INFO TaskSchedulerImpl: Killing all running tasks in stage 13: Stage finished
+25/05/28 22:43:32 INFO DAGScheduler: Job 5 finished: text at NativeMethodAccessorImpl.java:0, took 0,161254 s
+25/05/28 22:43:32 INFO FileFormatWriter: Start to commit write Job 604282fd-42e6-4a2a-ab1d-cef91dc608fc.
+25/05/28 22:43:32 INFO FileFormatWriter: Write Job 604282fd-42e6-4a2a-ab1d-cef91dc608fc committed. Elapsed time: 13 ms.
+25/05/28 22:43:32 INFO FileFormatWriter: Finished processing stats for write job 604282fd-42e6-4a2a-ab1d-cef91dc608fc.
+Output DataFrame Job2 (come testo, con part-files) salvato in: results/spark_sql/job2_df_output_parts_text
+25/05/28 22:43:32 INFO FileSourceStrategy: Pushed Filters: IsNotNull(city),IsNotNull(year),IsNotNull(price),IsNotNull(daysonmarket)
+25/05/28 22:43:33 INFO FileSourceStrategy: Post-Scan Filters: isnotnull(city#20),isnotnull(year#73),isnotnull(price#57),isnotnull(daysonmarket#22),isnotnull(lower(city#20)),NOT (lower(city#20) = ),isnotnull(cast(cast(year#73 as float) as int)),(cast(cast(year#73 as float) as int) >= 1900),(cast(cast(year#73 as float) as int) <= 2025),isnotnull(cast(price#57 as float)),(cast(price#57 as float) > 0.0),isnotnull(cast(daysonmarket#22 as int)),(cast(daysonmarket#22 as int) >= 0)
+25/05/28 22:43:33 INFO MemoryStore: Block broadcast_9 stored as values in memory (estimated size 199.6 KiB, free 433.3 MiB)
+25/05/28 22:43:33 INFO MemoryStore: Block broadcast_9_piece0 stored as bytes in memory (estimated size 34.3 KiB, free 433.3 MiB)
+25/05/28 22:43:33 INFO BlockManagerInfo: Added broadcast_9_piece0 in memory on ALFRED.wind3.hub:34811 (size: 34.3 KiB, free: 434.2 MiB)
+25/05/28 22:43:33 INFO SparkContext: Created broadcast 9 from collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170
+25/05/28 22:43:33 INFO FileSourceScanExec: Planning scan with bin packing, max size: 4194304 bytes, open cost is considered as scanning 4194304 bytes.
+25/05/28 22:43:33 INFO DAGScheduler: Registering RDD 45 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) as input to shuffle 3
+25/05/28 22:43:33 INFO DAGScheduler: Got map stage job 6 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) with 2 output partitions
+25/05/28 22:43:33 INFO DAGScheduler: Final stage: ShuffleMapStage 14 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170)
+25/05/28 22:43:33 INFO DAGScheduler: Parents of final stage: List()
+25/05/28 22:43:33 INFO DAGScheduler: Missing parents: List()
+25/05/28 22:43:33 INFO DAGScheduler: Submitting ShuffleMapStage 14 (MapPartitionsRDD[45] at collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170), which has no missing parents
+25/05/28 22:43:33 INFO MemoryStore: Block broadcast_10 stored as values in memory (estimated size 64.5 KiB, free 433.2 MiB)
+25/05/28 22:43:33 INFO MemoryStore: Block broadcast_10_piece0 stored as bytes in memory (estimated size 28.6 KiB, free 433.2 MiB)
+25/05/28 22:43:33 INFO BlockManagerInfo: Added broadcast_10_piece0 in memory on ALFRED.wind3.hub:34811 (size: 28.6 KiB, free: 434.1 MiB)
+25/05/28 22:43:33 INFO SparkContext: Created broadcast 10 from broadcast at DAGScheduler.scala:1585
+25/05/28 22:43:33 INFO DAGScheduler: Submitting 2 missing tasks from ShuffleMapStage 14 (MapPartitionsRDD[45] at collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) (first 15 tasks are for partitions Vector(0, 1))
+25/05/28 22:43:33 INFO TaskSchedulerImpl: Adding task set 14.0 with 2 tasks resource profile 0
+25/05/28 22:43:33 INFO TaskSetManager: Starting task 0.0 in stage 14.0 (TID 8) (ALFRED.wind3.hub, executor driver, partition 0, PROCESS_LOCAL, 9639 bytes) 
+25/05/28 22:43:33 INFO TaskSetManager: Starting task 1.0 in stage 14.0 (TID 9) (ALFRED.wind3.hub, executor driver, partition 1, PROCESS_LOCAL, 9639 bytes) 
+25/05/28 22:43:33 INFO Executor: Running task 1.0 in stage 14.0 (TID 9)
+25/05/28 22:43:33 INFO Executor: Running task 0.0 in stage 14.0 (TID 8)
+25/05/28 22:43:33 INFO FileScanRDD: Reading File path: file:///media/luke/LUKE-DISK-3/used-cars-big-data-analysis/data/samples/used_cars_1k.csv, range: 0-4194304, partition values: [empty row]
+25/05/28 22:43:33 INFO FileScanRDD: Reading File path: file:///media/luke/LUKE-DISK-3/used-cars-big-data-analysis/data/samples/used_cars_1k.csv, range: 4194304-5813377, partition values: [empty row]
+25/05/28 22:43:33 INFO BlockManagerInfo: Removed broadcast_8_piece0 on ALFRED.wind3.hub:34811 in memory (size: 106.2 KiB, free: 434.2 MiB)
+25/05/28 22:43:33 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:33 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:33 INFO PythonUDFRunner: Times: total = 223, boot = -497, init = 617, finish = 103
+25/05/28 22:43:33 INFO Executor: Finished task 1.0 in stage 14.0 (TID 9). 3349 bytes result sent to driver
+25/05/28 22:43:33 INFO TaskSetManager: Finished task 1.0 in stage 14.0 (TID 9) in 288 ms on ALFRED.wind3.hub (executor driver) (1/2)
+25/05/28 22:43:33 INFO PythonUDFRunner: Times: total = 383, boot = -731, init = 849, finish = 265
+25/05/28 22:43:33 INFO Executor: Finished task 0.0 in stage 14.0 (TID 8). 3349 bytes result sent to driver
+25/05/28 22:43:33 INFO TaskSetManager: Finished task 0.0 in stage 14.0 (TID 8) in 442 ms on ALFRED.wind3.hub (executor driver) (2/2)
+25/05/28 22:43:33 INFO TaskSchedulerImpl: Removed TaskSet 14.0, whose tasks have all completed, from pool 
+25/05/28 22:43:33 INFO DAGScheduler: ShuffleMapStage 14 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) finished in 0,450 s
+25/05/28 22:43:33 INFO DAGScheduler: looking for newly runnable stages
+25/05/28 22:43:33 INFO DAGScheduler: running: Set()
+25/05/28 22:43:33 INFO DAGScheduler: waiting: Set()
+25/05/28 22:43:33 INFO DAGScheduler: failed: Set()
+25/05/28 22:43:33 INFO ShufflePartitionsUtil: For shuffle(3), advisory target size: 67108864, actual target size 1048576, minimum partition size: 1048576
+25/05/28 22:43:33 INFO DAGScheduler: Registering RDD 52 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) as input to shuffle 4
+25/05/28 22:43:33 INFO DAGScheduler: Got map stage job 7 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) with 2 output partitions
+25/05/28 22:43:33 INFO DAGScheduler: Final stage: ShuffleMapStage 16 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170)
+25/05/28 22:43:33 INFO DAGScheduler: Parents of final stage: List(ShuffleMapStage 15)
+25/05/28 22:43:33 INFO DAGScheduler: Missing parents: List()
+25/05/28 22:43:33 INFO DAGScheduler: Submitting ShuffleMapStage 16 (MapPartitionsRDD[52] at collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170), which has no missing parents
+25/05/28 22:43:33 INFO MemoryStore: Block broadcast_11 stored as values in memory (estimated size 74.4 KiB, free 433.5 MiB)
+25/05/28 22:43:33 INFO MemoryStore: Block broadcast_11_piece0 stored as bytes in memory (estimated size 33.1 KiB, free 433.5 MiB)
+25/05/28 22:43:33 INFO BlockManagerInfo: Added broadcast_11_piece0 in memory on ALFRED.wind3.hub:34811 (size: 33.1 KiB, free: 434.2 MiB)
+25/05/28 22:43:33 INFO SparkContext: Created broadcast 11 from broadcast at DAGScheduler.scala:1585
+25/05/28 22:43:33 INFO DAGScheduler: Submitting 2 missing tasks from ShuffleMapStage 16 (MapPartitionsRDD[52] at collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) (first 15 tasks are for partitions Vector(0, 1))
+25/05/28 22:43:33 INFO TaskSchedulerImpl: Adding task set 16.0 with 2 tasks resource profile 0
+25/05/28 22:43:33 INFO TaskSetManager: Starting task 0.0 in stage 16.0 (TID 10) (ALFRED.wind3.hub, executor driver, partition 0, NODE_LOCAL, 8988 bytes) 
+25/05/28 22:43:33 INFO TaskSetManager: Starting task 1.0 in stage 16.0 (TID 11) (ALFRED.wind3.hub, executor driver, partition 1, NODE_LOCAL, 8988 bytes) 
+25/05/28 22:43:33 INFO Executor: Running task 1.0 in stage 16.0 (TID 11)
+25/05/28 22:43:33 INFO Executor: Running task 0.0 in stage 16.0 (TID 10)
+25/05/28 22:43:33 INFO ShuffleBlockFetcherIterator: Getting 2 (1027.7 KiB) non-empty blocks including 2 (1027.7 KiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+25/05/28 22:43:33 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 0 ms
+25/05/28 22:43:33 INFO ShuffleBlockFetcherIterator: Getting 2 (1336.5 KiB) non-empty blocks including 2 (1336.5 KiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+25/05/28 22:43:33 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 0 ms
+25/05/28 22:43:33 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:33 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:33 INFO BlockManagerInfo: Removed broadcast_10_piece0 on ALFRED.wind3.hub:34811 in memory (size: 28.6 KiB, free: 434.2 MiB)
+25/05/28 22:43:33 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:33 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:33 INFO PythonUDFRunner: Times: total = 140, boot = -288, init = 397, finish = 31
+25/05/28 22:43:33 INFO PythonUDFRunner: Times: total = 136, boot = -134, init = 232, finish = 38
+25/05/28 22:43:33 INFO Executor: Finished task 0.0 in stage 16.0 (TID 10). 6536 bytes result sent to driver
+25/05/28 22:43:33 INFO TaskSetManager: Finished task 0.0 in stage 16.0 (TID 10) in 222 ms on ALFRED.wind3.hub (executor driver) (1/2)
+25/05/28 22:43:33 INFO Executor: Finished task 1.0 in stage 16.0 (TID 11). 6536 bytes result sent to driver
+25/05/28 22:43:33 INFO TaskSetManager: Finished task 1.0 in stage 16.0 (TID 11) in 232 ms on ALFRED.wind3.hub (executor driver) (2/2)
+25/05/28 22:43:33 INFO TaskSchedulerImpl: Removed TaskSet 16.0, whose tasks have all completed, from pool 
+25/05/28 22:43:33 INFO DAGScheduler: ShuffleMapStage 16 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) finished in 0,242 s
+25/05/28 22:43:33 INFO DAGScheduler: looking for newly runnable stages
+25/05/28 22:43:33 INFO DAGScheduler: running: Set()
+25/05/28 22:43:33 INFO DAGScheduler: waiting: Set()
+25/05/28 22:43:33 INFO DAGScheduler: failed: Set()
+25/05/28 22:43:33 INFO ShufflePartitionsUtil: For shuffle(4), advisory target size: 67108864, actual target size 1048576, minimum partition size: 1048576
+25/05/28 22:43:33 INFO SparkContext: Starting job: collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170
+25/05/28 22:43:33 INFO DAGScheduler: Got job 8 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) with 1 output partitions
+25/05/28 22:43:33 INFO DAGScheduler: Final stage: ResultStage 19 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170)
+25/05/28 22:43:33 INFO DAGScheduler: Parents of final stage: List(ShuffleMapStage 18)
+25/05/28 22:43:33 INFO DAGScheduler: Missing parents: List()
+25/05/28 22:43:33 INFO DAGScheduler: Submitting ResultStage 19 (MapPartitionsRDD[60] at collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170), which has no missing parents
+25/05/28 22:43:33 INFO MemoryStore: Block broadcast_12 stored as values in memory (estimated size 80.7 KiB, free 433.5 MiB)
+25/05/28 22:43:33 INFO MemoryStore: Block broadcast_12_piece0 stored as bytes in memory (estimated size 35.6 KiB, free 433.4 MiB)
+25/05/28 22:43:33 INFO BlockManagerInfo: Added broadcast_12_piece0 in memory on ALFRED.wind3.hub:34811 (size: 35.6 KiB, free: 434.2 MiB)
+25/05/28 22:43:33 INFO SparkContext: Created broadcast 12 from broadcast at DAGScheduler.scala:1585
+25/05/28 22:43:33 INFO DAGScheduler: Submitting 1 missing tasks from ResultStage 19 (MapPartitionsRDD[60] at collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) (first 15 tasks are for partitions Vector(0))
+25/05/28 22:43:33 INFO TaskSchedulerImpl: Adding task set 19.0 with 1 tasks resource profile 0
+25/05/28 22:43:33 INFO TaskSetManager: Starting task 0.0 in stage 19.0 (TID 12) (ALFRED.wind3.hub, executor driver, partition 0, NODE_LOCAL, 8999 bytes) 
+25/05/28 22:43:33 INFO Executor: Running task 0.0 in stage 19.0 (TID 12)
+25/05/28 22:43:33 INFO ShuffleBlockFetcherIterator: Getting 2 (69.6 KiB) non-empty blocks including 2 (69.6 KiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+25/05/28 22:43:33 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 1 ms
+25/05/28 22:43:33 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:33 INFO PythonUDFRunner: Times: total = 82, boot = -137, init = 211, finish = 8
+25/05/28 22:43:34 INFO Executor: Finished task 0.0 in stage 19.0 (TID 12). 152005 bytes result sent to driver
+25/05/28 22:43:34 INFO TaskSetManager: Finished task 0.0 in stage 19.0 (TID 12) in 127 ms on ALFRED.wind3.hub (executor driver) (1/1)
+25/05/28 22:43:34 INFO TaskSchedulerImpl: Removed TaskSet 19.0, whose tasks have all completed, from pool 
+25/05/28 22:43:34 INFO DAGScheduler: ResultStage 19 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) finished in 0,137 s
+25/05/28 22:43:34 INFO DAGScheduler: Job 8 is finished. Cancelling potential speculative or zombie tasks for this job
+25/05/28 22:43:34 INFO TaskSchedulerImpl: Killing all running tasks in stage 19: Stage finished
+25/05/28 22:43:34 INFO DAGScheduler: Job 8 finished: collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170, took 0,144067 s
+25/05/28 22:43:34 INFO DAGScheduler: Registering RDD 61 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) as input to shuffle 5
+25/05/28 22:43:34 INFO DAGScheduler: Got map stage job 9 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) with 1 output partitions
+25/05/28 22:43:34 INFO DAGScheduler: Final stage: ShuffleMapStage 22 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170)
+25/05/28 22:43:34 INFO DAGScheduler: Parents of final stage: List(ShuffleMapStage 21)
+25/05/28 22:43:34 INFO DAGScheduler: Missing parents: List()
+25/05/28 22:43:34 INFO DAGScheduler: Submitting ShuffleMapStage 22 (MapPartitionsRDD[61] at collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170), which has no missing parents
+25/05/28 22:43:34 INFO MemoryStore: Block broadcast_13 stored as values in memory (estimated size 143.3 KiB, free 433.3 MiB)
+25/05/28 22:43:34 INFO MemoryStore: Block broadcast_13_piece0 stored as bytes in memory (estimated size 45.5 KiB, free 433.3 MiB)
+25/05/28 22:43:34 INFO BlockManagerInfo: Removed broadcast_12_piece0 on ALFRED.wind3.hub:34811 in memory (size: 35.6 KiB, free: 434.2 MiB)
+25/05/28 22:43:34 INFO BlockManagerInfo: Added broadcast_13_piece0 in memory on ALFRED.wind3.hub:34811 (size: 45.5 KiB, free: 434.2 MiB)
+25/05/28 22:43:34 INFO SparkContext: Created broadcast 13 from broadcast at DAGScheduler.scala:1585
+25/05/28 22:43:34 INFO DAGScheduler: Submitting 1 missing tasks from ShuffleMapStage 22 (MapPartitionsRDD[61] at collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) (first 15 tasks are for partitions Vector(0))
+25/05/28 22:43:34 INFO TaskSchedulerImpl: Adding task set 22.0 with 1 tasks resource profile 0
+25/05/28 22:43:34 INFO TaskSetManager: Starting task 0.0 in stage 22.0 (TID 13) (ALFRED.wind3.hub, executor driver, partition 0, NODE_LOCAL, 8988 bytes) 
+25/05/28 22:43:34 INFO BlockManagerInfo: Removed broadcast_11_piece0 on ALFRED.wind3.hub:34811 in memory (size: 33.1 KiB, free: 434.2 MiB)
+25/05/28 22:43:34 INFO Executor: Running task 0.0 in stage 22.0 (TID 13)
+25/05/28 22:43:34 INFO ShuffleBlockFetcherIterator: Getting 2 (69.6 KiB) non-empty blocks including 2 (69.6 KiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+25/05/28 22:43:34 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 0 ms
+25/05/28 22:43:34 INFO ObjectAggregationIterator: Aggregation hash map size 128 reaches threshold capacity (128 entries), spilling and falling back to sort based aggregation. You may change the threshold by adjust option spark.sql.objectHashAggregate.sortBased.fallbackThreshold
+25/05/28 22:43:34 INFO PythonUDFRunner: Times: total = 93, boot = -279, init = 357, finish = 15
+25/05/28 22:43:34 INFO Executor: Finished task 0.0 in stage 22.0 (TID 13). 8341 bytes result sent to driver
+25/05/28 22:43:34 INFO TaskSetManager: Finished task 0.0 in stage 22.0 (TID 13) in 150 ms on ALFRED.wind3.hub (executor driver) (1/1)
+25/05/28 22:43:34 INFO TaskSchedulerImpl: Removed TaskSet 22.0, whose tasks have all completed, from pool 
+25/05/28 22:43:34 INFO DAGScheduler: ShuffleMapStage 22 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) finished in 0,164 s
+25/05/28 22:43:34 INFO DAGScheduler: looking for newly runnable stages
+25/05/28 22:43:34 INFO DAGScheduler: running: Set()
+25/05/28 22:43:34 INFO DAGScheduler: waiting: Set()
+25/05/28 22:43:34 INFO DAGScheduler: failed: Set()
+25/05/28 22:43:34 INFO ShufflePartitionsUtil: For shuffle(5), advisory target size: 67108864, actual target size 1048576, minimum partition size: 1048576
+25/05/28 22:43:34 INFO SparkContext: Starting job: collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170
+25/05/28 22:43:34 INFO DAGScheduler: Got job 10 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) with 1 output partitions
+25/05/28 22:43:34 INFO DAGScheduler: Final stage: ResultStage 26 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170)
+25/05/28 22:43:34 INFO DAGScheduler: Parents of final stage: List(ShuffleMapStage 25)
+25/05/28 22:43:34 INFO DAGScheduler: Missing parents: List()
+25/05/28 22:43:34 INFO DAGScheduler: Submitting ResultStage 26 (MapPartitionsRDD[64] at collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170), which has no missing parents
+25/05/28 22:43:34 INFO MemoryStore: Block broadcast_14 stored as values in memory (estimated size 83.1 KiB, free 433.4 MiB)
+25/05/28 22:43:34 INFO MemoryStore: Block broadcast_14_piece0 stored as bytes in memory (estimated size 35.7 KiB, free 433.4 MiB)
+25/05/28 22:43:34 INFO BlockManagerInfo: Added broadcast_14_piece0 in memory on ALFRED.wind3.hub:34811 (size: 35.7 KiB, free: 434.2 MiB)
+25/05/28 22:43:34 INFO SparkContext: Created broadcast 14 from broadcast at DAGScheduler.scala:1585
+25/05/28 22:43:34 INFO DAGScheduler: Submitting 1 missing tasks from ResultStage 26 (MapPartitionsRDD[64] at collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) (first 15 tasks are for partitions Vector(0))
+25/05/28 22:43:34 INFO TaskSchedulerImpl: Adding task set 26.0 with 1 tasks resource profile 0
+25/05/28 22:43:34 INFO TaskSetManager: Starting task 0.0 in stage 26.0 (TID 14) (ALFRED.wind3.hub, executor driver, partition 0, NODE_LOCAL, 8999 bytes) 
+25/05/28 22:43:34 INFO Executor: Running task 0.0 in stage 26.0 (TID 14)
+25/05/28 22:43:34 INFO ShuffleBlockFetcherIterator: Getting 1 (60.6 KiB) non-empty blocks including 1 (60.6 KiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+25/05/28 22:43:34 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 0 ms
+25/05/28 22:43:34 INFO Executor: Finished task 0.0 in stage 26.0 (TID 14). 28436 bytes result sent to driver
+25/05/28 22:43:34 INFO TaskSetManager: Finished task 0.0 in stage 26.0 (TID 14) in 15 ms on ALFRED.wind3.hub (executor driver) (1/1)
+25/05/28 22:43:34 INFO TaskSchedulerImpl: Removed TaskSet 26.0, whose tasks have all completed, from pool 
+25/05/28 22:43:34 INFO DAGScheduler: ResultStage 26 (collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170) finished in 0,026 s
+25/05/28 22:43:34 INFO DAGScheduler: Job 10 is finished. Cancelling potential speculative or zombie tasks for this job
+25/05/28 22:43:34 INFO TaskSchedulerImpl: Killing all running tasks in stage 26: Stage finished
+25/05/28 22:43:34 INFO DAGScheduler: Job 10 finished: collect at /media/luke/LUKE-DISK-3/used-cars-big-data-analysis/src/spark/job2_spark_sql.py:170, took 0,032557 s
+Output Job2 aggregato in singolo file salvato in: results/spark_sql/job2_output_singlefile.txt
+
+--- JOB 2 SPARK SQL (DATAFRAME API) RESULTS (FIRST 10) ---
+City: alameda, Year: 2011	ReportFasce: [FasciaPrezzo: basso, NumAuto: 1, AvgDaysOnMarket: 0.00, TopWords: ['titan', 'make', 'dealer']; FasciaPrezzo: medio, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []; FasciaPrezzo: alto, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []]
+City: alameda, Year: 2013	ReportFasce: [FasciaPrezzo: basso, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []; FasciaPrezzo: medio, NumAuto: 1, AvgDaysOnMarket: 0.00, TopWords: ['laramie', 'ram', 'offers']; FasciaPrezzo: alto, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []]
+City: alhambra, Year: 2020	ReportFasce: [FasciaPrezzo: basso, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []; FasciaPrezzo: medio, NumAuto: 6, AvgDaysOnMarket: 0.00, TopWords: ['door', 'air', 'vehicle']; FasciaPrezzo: alto, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []]
+City: alhambra, Year: 2021	ReportFasce: [FasciaPrezzo: basso, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []; FasciaPrezzo: medio, NumAuto: 3, AvgDaysOnMarket: 0.00, TopWords: ['air', 'passenger', 'door']; FasciaPrezzo: alto, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []]
+City: amarillo, Year: 2019	ReportFasce: [FasciaPrezzo: basso, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []; FasciaPrezzo: medio, NumAuto: 1, AvgDaysOnMarket: 0.00, TopWords: ['air', 'cargo', 'rear']; FasciaPrezzo: alto, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []]
+City: anaheim, Year: 2018	ReportFasce: [FasciaPrezzo: basso, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []; FasciaPrezzo: medio, NumAuto: 1, AvgDaysOnMarket: 0.00, TopWords: ['may', 'data', 'dealer']; FasciaPrezzo: alto, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []]
+City: anaheim, Year: 2019	ReportFasce: [FasciaPrezzo: basso, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []; FasciaPrezzo: medio, NumAuto: 1, AvgDaysOnMarket: 0.00, TopWords: ['power', 'rear', 'automatic']; FasciaPrezzo: alto, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []]
+City: anaheim, Year: 2020	ReportFasce: [FasciaPrezzo: basso, NumAuto: 1, AvgDaysOnMarket: 0.00, TopWords: ['door', 'audio', 'temperature']; FasciaPrezzo: medio, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []; FasciaPrezzo: alto, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []]
+City: antioch, Year: 2006	ReportFasce: [FasciaPrezzo: basso, NumAuto: 1, AvgDaysOnMarket: 0.00, TopWords: ['air', '6cyl', 'literautomatic']; FasciaPrezzo: medio, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []; FasciaPrezzo: alto, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []]
+City: arcadia, Year: 2017	ReportFasce: [FasciaPrezzo: basso, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []; FasciaPrezzo: medio, NumAuto: 1, AvgDaysOnMarket: 4.00, TopWords: ['door', 'front', 'system']; FasciaPrezzo: alto, NumAuto: 0, AvgDaysOnMarket: 0.00, TopWords: []]
+25/05/28 22:43:34 INFO SparkContext: SparkContext is stopping with exitCode 0.
+25/05/28 22:43:34 INFO SparkUI: Stopped Spark web UI at http://ALFRED.wind3.hub:4040
+25/05/28 22:43:34 INFO MapOutputTrackerMasterEndpoint: MapOutputTrackerMasterEndpoint stopped!
+25/05/28 22:43:34 INFO MemoryStore: MemoryStore cleared
+25/05/28 22:43:34 INFO BlockManager: BlockManager stopped
+25/05/28 22:43:34 INFO BlockManagerMaster: BlockManagerMaster stopped
+25/05/28 22:43:34 INFO OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
+25/05/28 22:43:34 INFO SparkContext: Successfully stopped SparkContext
+25/05/28 22:43:35 INFO ShutdownHookManager: Shutdown hook called
+25/05/28 22:43:35 INFO ShutdownHookManager: Deleting directory /tmp/spark-e8aaa624-6d3c-417c-a510-cddf48c06a48
+25/05/28 22:43:35 INFO ShutdownHookManager: Deleting directory /tmp/spark-560c13e8-2261-42d5-b393-66fed043375b
+25/05/28 22:43:35 INFO ShutdownHookManager: Deleting directory /tmp/spark-e8aaa624-6d3c-417c-a510-cddf48c06a48/pyspark-cfe7eee6-e26e-43be-9d0a-1c5aed899b12

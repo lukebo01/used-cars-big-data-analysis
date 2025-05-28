@@ -18,7 +18,15 @@ current_model_data = None
 # }
 make_statistics_accumulator = defaultdict(list)
 
+# Aggiunta di un contatore per le statistiche di performance
+line_count = 0
+start_time = None
+
+import time
+start_time = time.time()
+
 for line in sys.stdin:
+    line_count += 1
     line = line.strip()
     try:
         # L'input dal mapper è: make_name\tmodel_name\tprice\tyear
@@ -123,3 +131,10 @@ for make_name_output_key in sorted_makes_names:
     # Output finale per marca: (a) nome marca, (b) lista di modelli con stats
     # Il formato richiesto è una "lista", qui usiamo un separatore ';' per i modelli.
     print(f"Make: {make_name_output_key}\tModels: [{'; '.join(models_output_strings_list)}]")
+
+# Stampa le statistiche di esecuzione su stderr (non influenzano l'output del job)
+end_time = time.time()
+duration = end_time - start_time
+sys.stderr.write(f"\nReducer Statistics:\n")
+sys.stderr.write(f"Processed {line_count} lines in {duration:.2f} seconds\n")
+sys.stderr.write(f"Average processing rate: {line_count/duration:.2f} lines/second\n")

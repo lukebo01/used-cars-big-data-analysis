@@ -10,7 +10,7 @@ DATASET="data/samples/used_cars_1k.csv" # Adatta se necessario
 
 # Crea directory per i risultati dei benchmark se non esiste
 # Sarà relativa alla directory da cui esegui lo script
-RESULTS_DIR="benchmark_results/spark"
+RESULTS_DIR="results/spark"
 mkdir -p "$RESULTS_DIR"
 echo "I risultati del benchmark verranno salvati in: $(pwd)/$RESULTS_DIR"
 

@@ -4,7 +4,7 @@
 DATASET="data/samples/used_cars_1k.csv"
 
 # Crea directory per i risultati dei benchmark se non esiste
-RESULTS_DIR="benchmark_results"
+RESULTS_DIR="results/mapreduce"
 mkdir -p $RESULTS_DIR
 
 # Esegui il benchmark con diverse dimensioni di dataset e numero di nodi

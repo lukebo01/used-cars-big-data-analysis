@@ -105,7 +105,7 @@ def run_spark_job(job_name, engine, input_file, output_dir):
 def main():
     parser = argparse.ArgumentParser(description='Run Spark benchmark with different dataset sizes')
     parser.add_argument('--input', required=True, help='Path to input CSV file')
-    parser.add_argument('--output', required=True, help='Output directory for results')
+    parser.add_argument('--output', default='results/spark', help='Output directory for results')
     parser.add_argument('--jobs', nargs='+', default=['job1', 'job2'], help='Job names to run (job1, job2, etc.)')
     parser.add_argument('--engines', nargs='+', default=['core', 'sql'], help='Spark engines to test (core, sql)')
     parser.add_argument('--sizes', nargs='+', type=float, default=[0.01, 0.1, 0.5, 1.0], 
@@ -117,7 +117,7 @@ def main():
     # Create output directory
     os.makedirs(args.output, exist_ok=True)
     samples_dir = os.path.join(args.output, "samples")
-    results_dir = os.path.join(args.output, "spark_results")
+    results_dir = os.path.join(args.output, "spark_benchmark_results")
     os.makedirs(results_dir, exist_ok=True)
     
     # Create or use sample datasets

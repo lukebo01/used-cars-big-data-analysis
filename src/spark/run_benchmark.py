@@ -141,63 +141,46 @@ def run_benchmark(args):
     sample_files = {}
     
     # Prepara i campioni prima di iniziare i benchmark
-    print("\nGestione dei campioni di dati:")
+    print("\nPreparazione dei campioni di dati:")
     
     # Sempre mappare il campione 100% al file di input originale
     sample_files[1.0] = args.input
     print(f"  • Dataset completo (100%): {args.input}")
     
-    # Gestisci gli altri campioni (minori del 100%)
+    # MODIFICA: Genera SEMPRE tutti i campioni necessari
     for size in [s for s in args.sizes if s < 1.0]:
         # Nome del file campione standard: used_cars_10pct.csv, used_cars_25pct.csv, ecc.
         sample_filename = f"used_cars_{int(size*100)}pct.csv"
         sample_path = os.path.join(samples_dir, sample_filename)
         
+        # Se il campione esiste e vogliamo usare quelli esistenti, non lo rigeneriamo
         if os.path.exists(sample_path) and args.use_existing_samples:
-            # Usa il campione esistente
-            print(f"  • Campione {int(size*100)}% trovato: {sample_path}")
+            print(f"  • Campione {int(size*100)}% trovato e verrà utilizzato: {sample_path}")
             sample_files[size] = sample_path
-        elif os.path.exists(sample_path) and not args.use_existing_samples:
-            # Rimuovi il campione esistente per ricrearlo fresco
-            print(f"  • Ricreazione campione {int(size*100)}%...")
-            os.remove(sample_path)
+        else:
+            # In tutti gli altri casi, generiamo o rigeneriamo il campione
+            if os.path.exists(sample_path):
+                print(f"  • Ricreazione campione {int(size*100)}%...")
+                os.remove(sample_path)
+            else:
+                print(f"  • Creazione campione {int(size*100)}%...")
+            
+            # Crea il campione e aggiungi al dizionario
             create_sample(args.input, sample_path, size)
             sample_files[size] = sample_path
-        elif not os.path.exists(sample_path):
-            if not args.use_existing_samples:
-                # Crea un nuovo campione se non esiste
-                print(f"  • Creazione campione {int(size*100)}%...")
-                create_sample(args.input, sample_path, size)
-                sample_files[size] = sample_path
-            else:
-                # Vogliamo usare campioni esistenti ma questo non esiste
-                print(f"  • AVVISO: Campione {int(size*100)}% richiesto ma non trovato.")
-                print(f"    Usa --no-use-existing-samples per generare i campioni mancanti.")
-                # Non impostiamo sample_files[size] qui, così cadrà nel fallback al dataset completo
     
     print("\nInizio esecuzione dei job di benchmark...")
                 
     for job in args.jobs:
         for engine in args.engines:
             for size in args.sizes:
-                # Determina il file di input corretto in base alla dimensione
-                if size in sample_files:
-                    # Abbiamo un campione valido per questa dimensione
-                    input_file = sample_files[size]
-                    actual_size = size
-                else:
-                    # Fallback al dataset completo con un avviso
-                    input_file = args.input
-                    actual_size = 1.0  # La dimensione effettiva è 100%
-                    print(f"\nAVVISO: Campione {int(size*100)}% non disponibile, uso il dataset completo")
+                # Ora siamo sicuri che tutti i campioni esistono in sample_files
+                input_file = sample_files[size]
                 
                 print(f"\nEsecuzione {job} con engine {engine} e dimensione {size}")
-                result = run_job(job, engine, input_file, actual_size)
+                result = run_job(job, engine, input_file, size)
                 
                 if result:
-                    # Correggi il campo dataset_size per riflettere la dimensione richiesta originale
-                    # anche se è stato usato un fallback
-                    result["requested_dataset_size"] = size
                     results.append(result)
     
     # Salva i risultati in un file JSON

@@ -114,7 +114,7 @@ python3 "$PYTHON_BENCHMARK_SCRIPT" \
     --jobs job1 job2 \
     --engines core sql \
     --sizes 0.1 1.0 \
-    --use-existing-samples # Rimuovi questa opzione se vuoi sempre rigenerare i campioni
+    #--use-existing-samples # Rimuovi questa opzione se vuoi sempre rigenerare i campioni
 
 echo ""
 echo "--------------------------------------------------------------------"

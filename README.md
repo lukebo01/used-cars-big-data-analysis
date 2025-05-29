@@ -84,19 +84,6 @@ Le operazioni di preprocessing eseguite includono:
 pip install -r requirements.txt
 ```
 
-### Esecuzione Analisi Completa
-
-Per eseguire tutte le analisi sui dati:
-
-```bash
-./scripts/run_analysis.sh
-```
-
-Questo script:
-1. Carica il dataset completo o ne crea un campione
-2. Esegue entrambi i job utilizzando Spark Core e Spark SQL
-3. Salva i risultati nella cartella `results/`
-
 ### Esecuzione Benchmark
 
 Per confrontare le prestazioni dei diversi engine e dimensioni del dataset:

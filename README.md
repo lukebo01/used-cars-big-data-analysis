@@ -89,7 +89,8 @@ pip install -r requirements.txt
 Per confrontare le prestazioni dei diversi engine e dimensioni del dataset:
 
 ```bash
-./scripts/run_benchmark.sh
+./run_scalbility_mapreduce.sh
+./run_scalability_spark.sh
 ```
 
 Questo script:

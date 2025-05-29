@@ -3,35 +3,55 @@
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import (
-    col, lower, min as spark_min, max as spark_max, avg, count, 
-    collect_list, struct, concat, lit, concat_ws, 
-    sort_array, format_number, collect_set
+    col, min as sql_min, max as sql_max, avg as sql_avg, count as sql_count, collect_set, count, avg,
+    lower, lit, concat, format_number, sort_array, collect_list, concat_ws
 )
 from pyspark.sql.types import FloatType, IntegerType, StringType
 import os
-import shutil # Per rimuovere la directory temporanea se necessario
+import shutil
+import argparse  # Per la gestione degli argomenti da riga di comando
+
 
 def main():
-    spark = SparkSession.builder.appName("UsedCarsStats_Job1_SparkSQL").getOrCreate()
-
-    input_path = "data/samples/used_cars_1k.csv"
+    # Configurazione argomenti da linea di comando
+    parser = argparse.ArgumentParser(description="Job 1: Calcolo statistiche di prezzo auto usate per marca e modello (SQL)")
+    parser.add_argument("--input", type=str, default="data/samples/used_cars_1k.csv", 
+                        help="Percorso del dataset di input")
+    parser.add_argument("--output_dir", type=str, default="results/spark_sql", 
+                        help="Directory base per i risultati")
+    parser.add_argument("--dataset_size", type=float, default=1.0,
+                        help="Dimensione del dataset (come frazione, es: 0.01, 0.05, 0.1, ecc.)")
+    args = parser.parse_args()
+    
+    spark = SparkSession.builder.appName("UsedCarsStats_Job1_SQL").getOrCreate()
+    
+    input_path = args.input
     
     # --- Percorsi di Output ---
-    output_dir_base = "results/spark_sql"
-    # Per l'output DataFrame standard (directory con part-files in formato text/csv/parquet etc.)
-    dataframe_output_path_text = os.path.join(output_dir_base, "job1_df_output_parts_text") 
+    output_dir_base = args.output_dir
+    
+    # Incorpora la dimensione del dataset nei nomi dei file di output
+    size_suffix = f"{args.dataset_size:.2f}".replace('.', '_')
+    
+    # Per l'output SQL in CSV
+    sql_output_path = os.path.join(output_dir_base, f"job1_sql_output_{size_suffix}")
     # Per il singolo file aggregato
-    single_file_output_path = os.path.join(output_dir_base, "job1_output_singlefile.txt")
-
+    single_file_output_path = os.path.join(output_dir_base, f"job1_sql_output_singlefile_{size_suffix}.txt")
+    # Per l'output DataFrame in formato testo
+    dataframe_output_path_text = os.path.join(output_dir_base, f"job1_dataframe_output_{size_suffix}")
+    
     # Crea la directory di output base se non esiste
     os.makedirs(output_dir_base, exist_ok=True)
-
-    # Rimuovi la directory di output DataFrame precedente, se esiste
-    if os.path.exists(dataframe_output_path_text):
-        shutil.rmtree(dataframe_output_path_text)
+    
+    # Rimuovi la directory di output SQL precedente, se esiste
+    if os.path.exists(sql_output_path):
+        shutil.rmtree(sql_output_path)
     # Rimuovi il file singolo precedente, se esiste
     if os.path.exists(single_file_output_path):
         os.remove(single_file_output_path)
+    # Rimuovi la directory di output DataFrame precedente, se esiste
+    if os.path.exists(dataframe_output_path_text):
+        shutil.rmtree(dataframe_output_path_text)
 
     # --- Inizio Logica Spark ---
     df_raw = spark.read.csv(input_path, header=True, inferSchema=False, escape='"')
@@ -57,9 +77,9 @@ def main():
 
     model_stats_df = df_filtered.groupBy("make_name", "model_name").agg(
         count("*").alias("num_cars"),
-        spark_min("price").alias("min_price_val"),
-        spark_max("price").alias("max_price_val"),
-        avg("price").alias("avg_price_val"),
+        sql_min("price").alias("min_price_val"),
+        sql_max("price").alias("max_price_val"),
+        sql_avg("price").alias("avg_price_val"),
         sort_array(collect_set("year")).alias("years_list")
     )
 

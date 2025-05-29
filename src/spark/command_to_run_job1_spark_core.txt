@@ -1,1 +1,0 @@
-spark-submit src/spark/job1_spark_core.py

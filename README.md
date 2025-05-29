@@ -37,6 +37,10 @@ Questo job analizza le auto raggruppandole per città, anno e fascia di prezzo. 
   - Le 3 parole più frequenti nelle descrizioni (dopo rimozione delle stop words)
 - Genera report dettagliati per ciascuna combinazione città/anno
 
+# Liste delle colonne necessarie per i job
+JOB1_COLS = ['make_name', 'model_name', 'price', 'year']
+JOB2_COLS = ['city', 'year', 'price', 'daysonmarket', 'description', 'description_cleaned']
+
 ## Struttura del Repository
 
 ```

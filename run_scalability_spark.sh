@@ -10,7 +10,7 @@ DATASET="data/samples/used_cars_1k.csv" # Adatta se necessario
 
 # Crea directory per i risultati dei benchmark se non esiste
 # Sarà relativa alla directory da cui esegui lo script
-RESULTS_DIR="results/spark"
+RESULTS_DIR="results/spark_benchmark"
 mkdir -p "$RESULTS_DIR"
 echo "I risultati del benchmark verranno salvati in: $(pwd)/$RESULTS_DIR"
 
@@ -113,7 +113,7 @@ python3 "$PYTHON_BENCHMARK_SCRIPT" \
     --output "$RESULTS_DIR" \
     --jobs job1 job2 \
     --engines core sql \
-    --sizes 0.01 0.05 0.1 0.25 0.5 1.0 \
+    --sizes 0.1 1.0 \
     --use-existing-samples # Rimuovi questa opzione se vuoi sempre rigenerare i campioni
 
 echo ""

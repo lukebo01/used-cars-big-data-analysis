@@ -1,0 +1,98 @@
+[
+  {
+    "job": "job1",
+    "engine": "core",
+    "dataset_size": 0.1,
+    "execution_time": 7.202268362045288,
+    "memory_usage_mb": 1.0,
+    "input_size_mb": 0.5139598846435547,
+    "record_count": 93,
+    "records_per_sec": 12.912598548825805,
+    "mb_per_sec": 0.07136083506024778,
+    "requested_dataset_size": 0.1
+  },
+  {
+    "job": "job1",
+    "engine": "core",
+    "dataset_size": 1.0,
+    "execution_time": 7.772325038909912,
+    "memory_usage_mb": 17.5859375,
+    "input_size_mb": 5.544068336486816,
+    "record_count": 1056,
+    "records_per_sec": 135.86668013926842,
+    "mb_per_sec": 0.7133088630148676,
+    "requested_dataset_size": 1.0
+  },
+  {
+    "job": "job1",
+    "engine": "sql",
+    "dataset_size": 0.1,
+    "execution_time": 10.900371551513672,
+    "memory_usage_mb": 28.76953125,
+    "input_size_mb": 0.5139598846435547,
+    "record_count": 93,
+    "records_per_sec": 8.531819265104374,
+    "mb_per_sec": 0.0471506757558355,
+    "requested_dataset_size": 0.1
+  },
+  {
+    "job": "job1",
+    "engine": "sql",
+    "dataset_size": 1.0,
+    "execution_time": 10.621360778808594,
+    "memory_usage_mb": 1.0,
+    "input_size_mb": 5.544068336486816,
+    "record_count": 1056,
+    "records_per_sec": 99.42228891300803,
+    "mb_per_sec": 0.5219734506663372,
+    "requested_dataset_size": 1.0
+  },
+  {
+    "job": "job2",
+    "engine": "core",
+    "dataset_size": 0.1,
+    "execution_time": 7.106806755065918,
+    "memory_usage_mb": 198.7421875,
+    "input_size_mb": 0.5139598846435547,
+    "record_count": 93,
+    "records_per_sec": 13.086045984535483,
+    "mb_per_sec": 0.07231938370593666,
+    "requested_dataset_size": 0.1
+  },
+  {
+    "job": "job2",
+    "engine": "core",
+    "dataset_size": 1.0,
+    "execution_time": 8.129220724105835,
+    "memory_usage_mb": 1.0,
+    "input_size_mb": 5.544068336486816,
+    "record_count": 1056,
+    "records_per_sec": 129.9017502217168,
+    "mb_per_sec": 0.6819925949417041,
+    "requested_dataset_size": 1.0
+  },
+  {
+    "job": "job2",
+    "engine": "sql",
+    "dataset_size": 0.1,
+    "execution_time": 12.085309743881226,
+    "memory_usage_mb": 1.0,
+    "input_size_mb": 0.5139598846435547,
+    "record_count": 93,
+    "records_per_sec": 7.695293043447708,
+    "mb_per_sec": 0.04252765510654551,
+    "requested_dataset_size": 0.1
+  },
+  {
+    "job": "job2",
+    "engine": "sql",
+    "dataset_size": 1.0,
+    "execution_time": 13.081825971603394,
+    "memory_usage_mb": 1.0,
+    "input_size_mb": 5.544068336486816,
+    "record_count": 1056,
+    "records_per_sec": 80.72267604631418,
+    "mb_per_sec": 0.4237992730159595,
+    "requested_dataset_size": 1.0
+  }
+]

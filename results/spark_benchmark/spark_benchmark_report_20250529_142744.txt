@@ -1,0 +1,33 @@
+Spark Scalability Benchmark Report
+================================
+
+Date: 2025-05-29 14:29:09
+Input file: data/samples/used_cars_1k.csv
+
+Summary by Job, Engine and Dataset Size:
+-------------------------------------
+
+Job: job1, Engine: core
+| Dataset Size | Input Size (MB) | Records | Time (s) | Records/sec | MB/sec | Memory (MB) |
+|--------------|----------------|---------|----------|-------------|--------|-------------|
+|      10.00% |           0.51 |      93 |     7.20 |       12.91 |   0.07 |        1.00 |
+|     100.00% |           5.54 |    1056 |     7.77 |      135.87 |   0.71 |       17.59 |
+
+Job: job1, Engine: sql
+| Dataset Size | Input Size (MB) | Records | Time (s) | Records/sec | MB/sec | Memory (MB) |
+|--------------|----------------|---------|----------|-------------|--------|-------------|
+|      10.00% |           0.51 |      93 |    10.90 |        8.53 |   0.05 |       28.77 |
+|     100.00% |           5.54 |    1056 |    10.62 |       99.42 |   0.52 |        1.00 |
+
+Job: job2, Engine: core
+| Dataset Size | Input Size (MB) | Records | Time (s) | Records/sec | MB/sec | Memory (MB) |
+|--------------|----------------|---------|----------|-------------|--------|-------------|
+|      10.00% |           0.51 |      93 |     7.11 |       13.09 |   0.07 |      198.74 |
+|     100.00% |           5.54 |    1056 |     8.13 |      129.90 |   0.68 |        1.00 |
+
+Job: job2, Engine: sql
+| Dataset Size | Input Size (MB) | Records | Time (s) | Records/sec | MB/sec | Memory (MB) |
+|--------------|----------------|---------|----------|-------------|--------|-------------|
+|      10.00% |           0.51 |      93 |    12.09 |        7.70 |   0.04 |        1.00 |
+|     100.00% |           5.54 |    1056 |    13.08 |       80.72 |   0.42 |        1.00 |
+

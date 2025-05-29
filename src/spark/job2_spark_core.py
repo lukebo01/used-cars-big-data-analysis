@@ -4,10 +4,11 @@
 from pyspark.sql import SparkSession
 import csv
 from io import StringIO
-import re
-from collections import Counter, defaultdict
 import os
 import shutil
+import re
+from collections import Counter
+import argparse  # Per la gestione degli argomenti da riga di comando
 
 # --- HEADER E INDICI ---
 HEADER_FIELDS_STRING = "vin,back_legroom,body_type,city,city_fuel_economy,daysonmarket,dealer_zip,description,engine_cylinders,engine_displacement,engine_type,exterior_color,fleet,frame_damaged,franchise_dealer,franchise_make,front_legroom,fuel_tank_volume,fuel_type,has_accidents,height,highway_fuel_economy,horsepower,interior_color,isCab,is_new,latitude,length,listed_date,listing_color,listing_id,longitude,main_picture_url,major_options,make_name,maximum_seating,mileage,model_name,owner_count,power,price,salvage,savings_amount,seller_rating,sp_id,sp_name,theft_title,torque,transmission,transmission_display,trimId,trim_name,wheel_system,wheel_system_display,wheelbase,width,year,major_options_list,num_major_options,horsepower_extracted,horsepower_rpm,torque_value,torque_rpm,seats,cylinders,listed_year,listed_month,listed_day,listed_dayofweek,description_cleaned,back_legroom_missing,city_fuel_economy_missing,engine_displacement_missing,front_legroom_missing,fuel_tank_volume_missing,height_missing,highway_fuel_economy_missing,horsepower_missing,length_missing,mileage_missing,owner_count_missing,seller_rating_missing,sp_id_missing,wheelbase_missing,width_missing,horsepower_extracted_missing,horsepower_rpm_missing,torque_value_missing,torque_rpm_missing,seats_missing,cylinders_missing,body_type_missing,description_missing,engine_cylinders_missing,engine_type_missing,exterior_color_missing,franchise_make_missing,fuel_type_missing,interior_color_missing,main_picture_url_missing,major_options_missing,maximum_seating_missing,power_missing,torque_missing,transmission_missing,transmission_display_missing,trimId_missing,trim_name_missing,wheel_system_missing,wheel_system_display_missing,description_cleaned_missing,unified_color"
@@ -136,19 +137,42 @@ def format_job2_output(city_year_key, price_range_aggregated_data_map):
 
 
 def main():
-    spark = SparkSession.builder.appName("UsedCarsReport_Job2_Core").getOrCreate()
+    # Configurazione argomenti da linea di comando
+    parser = argparse.ArgumentParser(description="Job 2: Calcolo statistiche per tipo di carrozzeria e colore (Core)")
+    parser.add_argument("--input", type=str, default="data/samples/used_cars_1k.csv", 
+                        help="Percorso del dataset di input")
+    parser.add_argument("--output_dir", type=str, default="results/spark_core", 
+                        help="Directory base per i risultati")
+    parser.add_argument("--dataset_size", type=float, default=1.0,
+                        help="Dimensione del dataset (come frazione, es: 0.01, 0.05, 0.1, ecc.)")
+    args = parser.parse_args()
+    
+    spark = SparkSession.builder.appName("UsedCarsStats_Job2_Core").getOrCreate()
     sc = spark.sparkContext
-
-    input_path = "data/samples/used_cars_1k.csv" # Usa il tuo campione
     
-    output_dir_base = "results/spark_core"
-    rdd_output_path = os.path.join(output_dir_base, "job2_rdd_output_parts") 
-    single_file_output_path = os.path.join(output_dir_base, "job2_output_singlefile.txt")
+    input_path = args.input
     
+    # --- Percorsi di Output ---
+    output_dir_base = args.output_dir
+    
+    # Incorpora la dimensione del dataset nei nomi dei file di output
+    size_suffix = f"{args.dataset_size:.2f}".replace('.', '_')
+    
+    # Per l'output RDD standard (directory con part-files)
+    rdd_output_path = os.path.join(output_dir_base, f"job2_rdd_output_parts_{size_suffix}")
+    # Per il singolo file aggregato
+    single_file_output_path = os.path.join(output_dir_base, f"job2_output_singlefile_{size_suffix}.txt")
+    
+    # Crea la directory di output base se non esiste
     os.makedirs(output_dir_base, exist_ok=True)
-    if os.path.exists(rdd_output_path): shutil.rmtree(rdd_output_path)
-    if os.path.exists(single_file_output_path): os.remove(single_file_output_path)
-
+    
+    # Rimuovi la directory di output RDD precedente, se esiste
+    if os.path.exists(rdd_output_path):
+        shutil.rmtree(rdd_output_path)
+    # Rimuovi il file singolo precedente, se esiste
+    if os.path.exists(single_file_output_path):
+        os.remove(single_file_output_path)
+    
     lines_rdd = sc.textFile(input_path)
     actual_header_line = lines_rdd.first()
     data_rdd = lines_rdd.filter(lambda line: line != actual_header_line)

@@ -3,72 +3,82 @@
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import (
-    col, lower, udf, explode, split, regexp_replace, trim,
-    when, lit, count, avg, collect_list, struct, concat_ws,
-    expr # Per usare espressioni SQL-like
+    col, min as sql_min, max as sql_max, avg as sql_avg, count as sql_count,
+    lower, lit, concat, format_number, sort_array, collect_list, concat_ws,
+    when, struct, trim, count, avg
 )
-from pyspark.sql.types import StringType, ArrayType, FloatType, IntegerType, MapType
-from collections import Counter
+from pyspark.sql.types import FloatType, IntegerType, StringType
 import os
 import shutil
-import re # Per la tokenizzazione base
+import re
+from collections import Counter
+from pyspark.sql.functions import udf
+import argparse  # Per la gestione degli argomenti da riga di comando
 
-
-# --- Costanti e Funzioni di Utilità ---
-STOP_WORDS = set([ # Stessa lista del mapper MapReduce
-    "a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at",
-    "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could",
-    "couldn't", "did", "didn't", "do", "does", "doesn't", "doing", "don't", "down", "during", "each", "few", "for",
-    "from", "further", "had", "hadn't", "has", "hasn't", "have", "haven't", "having", "he", "he'd", "he'll", "he's",
-    "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm",
-    "i've", "if", "in", "into", "is", "isn't", "it", "it's", "its", "itself", "let's", "me", "more", "most", "mustn't",
-    "my", "myself", "no", "nor", "not", "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours",
-    "ourselves", "out", "over", "own", "same", "shan't", "she", "she'd", "she'll", "she's", "should", "shouldn't",
-    "so", "some", "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there",
-    "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too",
-    "under", "until", "up", "very", "was", "wasn't", "we", "we'd", "we'll", "we're", "we've", "were", "weren't",
-    "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's",
-    "with", "won't", "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself",
-    "yourselves", "inc", "com", "www"
-])
-
-@udf(ArrayType(StringType()))
-def clean_tokenize_udf(text):
+# Definizione delle User Defined Functions necessarie
+def clean_tokenize(text):
     if not text:
         return []
-    text_lower = str(text).lower()
-    text_no_punct = re.sub(r'[^\w\s]', '', text_lower)
-    text_single_space = re.sub(r'\s+', ' ', text_no_punct).strip()
-    words = text_single_space.split()
-    return [word for word in words if word not in STOP_WORDS and len(word) > 2]
+    # Rimuovi caratteri speciali e converti in minuscolo
+    text = re.sub(r'[^\w\s]', ' ', text.lower())
+    # Dividi in token e filtra token vuoti
+    tokens = [token.strip() for token in text.split() if token.strip()]
+    return tokens
 
-# UDF per calcolare le top N parole da una lista di liste di parole
-@udf(ArrayType(StringType()))
-def get_top_n_words_udf(list_of_word_lists, n=3):
-    if not list_of_word_lists:
+def get_top_n_words(words_list, n=10):
+    if not words_list:
         return []
-    
-    flat_list = [word for sublist in list_of_word_lists for word in sublist if word] # Appiattisce e rimuove None/vuote
-    if not flat_list:
-        return []
-        
-    word_counts = Counter(flat_list)
-    return [word for word, count in word_counts.most_common(n)]
+    # Appiattisci la lista di liste in una singola lista
+    all_words = [word for sublist in words_list for word in sublist if word]
+    # Conta le parole e restituisci le N più frequenti
+    counter = Counter(all_words)
+    return [word for word, count in counter.most_common(n)]
 
+# Registra le UDF
+clean_tokenize_udf = udf(clean_tokenize, StringType())
+get_top_n_words_udf = udf(get_top_n_words, StringType())
 
 def main():
-    spark = SparkSession.builder.appName("UsedCarsReport_Job2_SQL").getOrCreate()
-
-    input_path = "data/samples/used_cars_1k.csv"
+    # Configurazione argomenti da linea di comando
+    parser = argparse.ArgumentParser(description="Job 2: Calcolo statistiche per tipo di carrozzeria e colore (SQL)")
+    parser.add_argument("--input", type=str, default="data/samples/used_cars_1k.csv", 
+                        help="Percorso del dataset di input")
+    parser.add_argument("--output_dir", type=str, default="results/spark_sql", 
+                        help="Directory base per i risultati")
+    parser.add_argument("--dataset_size", type=float, default=1.0,
+                        help="Dimensione del dataset (come frazione, es: 0.01, 0.05, 0.1, ecc.)")
+    args = parser.parse_args()
     
-    output_dir_base = "results/spark_sql"
-    dataframe_output_path_text = os.path.join(output_dir_base, "job2_df_output_parts_text")
-    single_file_output_path = os.path.join(output_dir_base, "job2_output_singlefile.txt")
-
+    spark = SparkSession.builder.appName("UsedCarsStats_Job2_SQL").getOrCreate()
+    
+    input_path = args.input
+    
+    # --- Percorsi di Output ---
+    output_dir_base = args.output_dir
+    
+    # Incorpora la dimensione del dataset nei nomi dei file di output
+    size_suffix = f"{args.dataset_size:.2f}".replace('.', '_')
+    
+    # Per l'output SQL in CSV
+    sql_output_path = os.path.join(output_dir_base, f"job2_sql_output_{size_suffix}")
+    # Per il singolo file aggregato
+    single_file_output_path = os.path.join(output_dir_base, f"job2_sql_output_singlefile_{size_suffix}.txt")
+    # Definisci il percorso di output per il DataFrame come testo
+    dataframe_output_path_text = os.path.join(output_dir_base, f"job2_dataframe_output_{size_suffix}")
+    
+    # Crea la directory di output base se non esiste
     os.makedirs(output_dir_base, exist_ok=True)
-    if os.path.exists(dataframe_output_path_text): shutil.rmtree(dataframe_output_path_text)
-    if os.path.exists(single_file_output_path): os.remove(single_file_output_path)
-
+    
+    # Rimuovi la directory di output SQL precedente, se esiste
+    if os.path.exists(sql_output_path):
+        shutil.rmtree(sql_output_path)
+    # Rimuovi il file singolo precedente, se esiste
+    if os.path.exists(single_file_output_path):
+        os.remove(single_file_output_path)
+    # Rimuovi la directory di output DataFrame precedente, se esiste
+    if os.path.exists(dataframe_output_path_text):
+        shutil.rmtree(dataframe_output_path_text)
+    
     df_raw = spark.read.csv(input_path, header=True, inferSchema=False, escape='"')
 
     # Seleziona e casta le colonne necessarie

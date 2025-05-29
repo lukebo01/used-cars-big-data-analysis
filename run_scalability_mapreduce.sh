@@ -19,7 +19,7 @@ python3 src/mapreduce/run_benchmark.py \
     --input "$DATASET" \
     --output "$RESULTS_DIR" \
     --jobs job1 job2 \
-    --sizes 0.01 0.05 0.1 0.25 0.5 1.0 \
+    --sizes 0.01 1.0 \
     --nodes $NUM_CORES
 
 echo "Benchmark completato. I risultati sono disponibili in $RESULTS_DIR"

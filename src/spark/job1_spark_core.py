@@ -85,8 +85,13 @@ def main():
     parser.add_argument("--dataset_size", type=float, default=1.0,
                         help="Dimensione del dataset (come frazione, es: 0.01, 0.05, 0.1, ecc.)")
     args = parser.parse_args()
-    
-    spark = SparkSession.builder.appName("UsedCarsStats_Job1_Core").getOrCreate()
+
+    spark = (SparkSession.builder
+        .appName("UsedCarsStats_Job1_Core")
+        .master("local[*]")  # Utilizza tutti i core disponibili
+        .config("spark.default.parallelism", "8")  # Configura il parallelismo predefinito
+        .getOrCreate())
+
     sc = spark.sparkContext
 
     input_path = args.input

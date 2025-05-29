@@ -49,7 +49,15 @@ def main():
                         help="Dimensione del dataset (come frazione, es: 0.01, 0.05, 0.1, ecc.)")
     args = parser.parse_args()
     
-    spark = SparkSession.builder.appName("UsedCarsStats_Job2_SQL").getOrCreate()
+    spark = (
+        SparkSession.builder
+        .appName("UsedCarsStats_Job2_SQL")
+        .master("local[*]")   # Usa tutti i core disponibili sulla macchina
+        .config("spark.sql.shuffle.partitions", "8")   # Partizioni per shuffle (adatta in base ai core)
+        .config("spark.default.parallelism", "8")     # Parallelismo di default
+        .getOrCreate()
+    )
+
     
     input_path = args.input
     

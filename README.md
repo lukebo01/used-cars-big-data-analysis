@@ -1,153 +1,125 @@
-# Progetto Big Data: Analisi Dataset Auto Usate USA
+# Analisi Big Data su Auto Usate USA
 
-Questo progetto è stato sviluppato per il corso di Big Data e analizza il dataset "US Used Cars Dataset" da Kaggle.  
-Contiene circa 3 milioni di record con informazioni dettagliate su auto usate in vendita fino al 2020.
+## Panoramica del Progetto
 
-## Indice
-
-- [Descrizione del Progetto](#descrizione-del-progetto)
-- [Dataset](#dataset)
-- [Analisi Implementate](#analisi-implementate)
-    - [Job 1: Statistiche per Marca/Modello](#job-1-statistiche-per-marcamodello)
-    - [Job 3: Gruppi di Modelli con Motori Simili](#job-3-gruppi-di-modelli-con-motori-simili)
-- [Tecnologie Utilizzate](#tecnologie-utilizzate)
-- [Struttura del Repository](#struttura-del-repository)
-- [Prerequisiti](#prerequisiti)
-- [Preparazione dei Dati](#preparazione-dei-dati)
-    - [Creazione dei Campioni](#creazione-dei-campioni)
-- [Come Eseguire i Job](#come-eseguire-i-job)
-    - [MapReduce (Hadoop Streaming)](#mapreduce-hadoop-streaming)
-    - [Apache Spark (Core e SQL)](#apache-spark-core-e-sql)
-- [Risultati Attesi](#risultati-attesi)
-- [Benchmark e Performance](#benchmark-e-performance)
-- [Autore](#autore)
-
-## Descrizione del Progetto
-
-L'obiettivo di questo progetto è progettare e realizzare analisi su un vasto dataset di auto usate, utilizzando diverse tecnologie Big Data.  
-Il progetto include la preparazione dei dati, l'implementazione di job analitici specifici e un confronto delle performance delle tecnologie scelte.
-
-## Dataset
-
-Il dataset utilizzato è [US Used Cars Dataset di Kaggle](https://www.kaggle.com/datasets/ananaymital/us-used-cars-dataset).  
-Esso contiene circa 3 milioni di record e 66 colonne. Per scopi di sviluppo e test di scalabilità, sono stati generati sottoinsiemi del dataset.
-
-- **Dataset Completo (originale):** Non incluso nel repository per motivi di dimensione. Scaricabile dal link sopra.  
-- **Campioni:** Situati in `data/samples/`, con dimensioni crescenti (es. 10k, 100k, 1M righe).
-
-## Analisi Implementate
-
-### Job 1: Statistiche per Marca/Modello
-
-Genera statistiche per ciascuna marca di automobile (`make_name`), indicando:  
-- Nome della marca.  
-- Lista di modelli (`model_name`) con:  
-    - Numero di auto presenti.  
-    - Prezzo minimo, massimo e medio.  
-    - Elenco degli anni (`year`) in cui il modello è presente.
-
-### Job 3: Gruppi di Modelli con Motori Simili
-
-Identifica gruppi di modelli con caratteristiche del motore "simili". Due modelli sono simili se:  
-`abs(v1 - v2) / max(v1, v2) <= 0.1` per potenza (`horsepower`) e cilindrata (`engine_displacement`).  
-Per ciascun gruppo:  
-- Prezzo medio del gruppo.  
-- Modello con maggiore potenza.
+Questo progetto analizza un vasto dataset di auto usate in vendita negli Stati Uniti (circa 3 milioni di record) utilizzando tecnologie Big Data. Il dataset contiene informazioni dettagliate sulle auto usate in vendita fino al 2020, tra cui specifiche tecniche, prezzi, caratteristiche e condizioni.
 
 ## Tecnologie Utilizzate
 
-Le analisi sono state implementate con:  
-1. **MapReduce:** Hadoop Streaming con script Python.  
-2. **Spark Core:** PySpark RDD API.  
-3. **Spark SQL:** PySpark DataFrame API e Spark SQL.  
+- **Apache Spark**: Core API e SQL API
+- **Python 3.x**: Framework principale per l'implementazione
+- **Jupyter Notebook**: Esplorazione dati e analisi preliminari
+- **Pandas**: Manipolazione dati durante la fase esplorativa
+- **PySpark**: API Python per Spark
 
-Il file system distribuito di riferimento è HDFS.
+## Job Implementati
+
+### Job 1: Statistiche per Marca/Modello
+
+Questo job genera statistiche dettagliate per ciascuna marca di automobile (`make_name`), fornendo:
+- Nome della marca
+- Lista di modelli (`model_name`) con:
+  - Numero di auto disponibili
+  - Prezzo minimo, massimo e medio
+  - Elenco degli anni (`year`) in cui il modello è presente
+
+
+### Job 2: Analisi Auto per Città, Anno e Fascia di Prezzo
+
+Questo job analizza le auto raggruppandole per città, anno e fascia di prezzo. Per ogni combinazione:
+- Classifica le auto in tre fasce di prezzo:
+  - Basso: < 20.000$
+  - Medio: 20.000$ - 50.000$
+  - Alto: > 50.000$
+- Calcola per ciascuna fascia di prezzo:
+  - Numero di auto disponibili
+  - Permanenza media sul mercato (giorni)
+  - Le 3 parole più frequenti nelle descrizioni (dopo rimozione delle stop words)
+- Genera report dettagliati per ciascuna combinazione città/anno
 
 ## Struttura del Repository
 
-```plaintext
+```
 used-cars-bigdata-analysis/
 ├── data/
-│   └── samples/          # Campioni del dataset
-├── notebooks/            # Jupyter notebooks per EDA
+│   └── samples/          # Campioni del dataset a diverse dimensioni
+├── notebooks/            # Notebook Jupyter per EDA e preprocessing
 ├── src/
-│   ├── common/           # Moduli Python condivisi
-│   ├── mapreduce/        # Codice per i job MapReduce
-│   ├── spark/            # Codice per i job Spark
+│   ├── mapreduce/        # Implementazione MapReduce
+│   │   ├── job1/         
+│   │   │   ├── mapper.py
+│   │   │   ├── reducer.py
+│   │   ├── job2/         
+│   │   │   ├── mapper.py
+│   │   │   ├── reducer.py
+│   │   └── run_benchmark.py
+│   ├── spark/            # Implementazione degli job Spark
+│   │   ├── job1_spark_core.py
+│   │   ├── job1_spark_sql.py
+│   │   ├── job2_spark_core.py
+│   │   ├── job2_spark_sql.py
+│   │   └── run_benchmark.py
 ├── results/              # Output dei job
-├── report/               # Report finale
-├── .gitignore
 ├── README.md             # Questo file
+├── run_scalability_mapreduce.sh 
+├── run_scalability_spark.sh 
 └── requirements.txt      # Dipendenze Python
 ```
 
-## Prerequisiti
+## Preprocessing Dati
 
-- Python 3.x  
-- Apache Hadoop (Hadoop Streaming)  
-- Apache Spark  
-- Java  
-- Librerie Python (`pyspark`, `pandas`, ecc.) specificate in `requirements.txt`.  
+Le operazioni di preprocessing eseguite includono:
+- Pulizia e standardizzazione di campi testuali
+- Conversione dei tipi di dato appropriati
+- Gestione di valori mancanti e outlier
+- Estrazione di caratteristiche numeriche da campi testuali (es. potenza del motore)
+- Normalizzazione dei valori anomali
 
-Installazione delle dipendenze Python:  
+## Come Eseguire il Progetto
+
+### Prerequisiti
+
 ```bash
+# Installare le dipendenze
 pip install -r requirements.txt
 ```
 
-## Preparazione dei Dati
+### Esecuzione Analisi Completa
 
-Include:  
-- Selezione delle colonne rilevanti.  
-- Conversione tipi di dato (es. `price` a float).  
-- Gestione valori mancanti e outlier.  
-- Standardizzazione stringhe.  
+Per eseguire tutte le analisi sui dati:
 
-La logica è implementata in `src/common/data_utils.py`.
-
-### Creazione dei Campioni
-
-Esempio per creare un campione di 10k righe:  
 ```bash
-ORIGINAL_FILE="path/to/US_used_cars_Kaggle.csv"
-DEST_DIR="data/samples"
-mkdir -p $DEST_DIR
-head -n 1 "$ORIGINAL_FILE" > "$DEST_DIR/used_cars_10k.csv"
-tail -n +2 "$ORIGINAL_FILE" | head -n 9999 >> "$DEST_DIR/used_cars_10k.csv"
+./scripts/run_analysis.sh
 ```
 
-## Come Eseguire i Job
+Questo script:
+1. Carica il dataset completo o ne crea un campione
+2. Esegue entrambi i job utilizzando Spark Core e Spark SQL
+3. Salva i risultati nella cartella `results/`
 
-### MapReduce (Hadoop Streaming)
+### Esecuzione Benchmark
 
-Esecuzione locale (simulata):  
+Per confrontare le prestazioni dei diversi engine e dimensioni del dataset:
+
 ```bash
-INPUT_FILE="data/samples/used_cars_10k.csv"
-OUTPUT_PREFIX="results/mr_job1_10k"
-MAPPER="src/mapreduce/job1/mapper.py"
-REDUCER="src/mapreduce/job1/reducer.py"
-
-cat "$INPUT_FILE" | python3 "$MAPPER" | sort -t$'\t' -k1,1 | python3 "$REDUCER" > "${OUTPUT_PREFIX}_output.txt"
+./scripts/run_benchmark.sh
 ```
 
-### Apache Spark (Core e SQL)
+Questo script:
+1. Crea campioni di diverse dimensioni (1%, 5%, 10%, 25%, 50%, 100%)
+2. Esegue i job su ciascun campione con entrambi gli engine (Core e SQL)
+3. Produce un report dettagliato su tempi di esecuzione, utilizzo memoria e scalabilità
 
-Esecuzione locale:  
-```bash
-INPUT_FILE="data/samples/used_cars_10k.csv"
-OUTPUT_PREFIX="results/spark_core_job1_10k"
-SCRIPT_PATH="src/spark/job1_spark_core.py"
+## Personalizzazione
 
-spark-submit --master local[*] "$SCRIPT_PATH" "$INPUT_FILE" "$OUTPUT_PREFIX"
-```
+È possibile personalizzare l'esecuzione modificando i parametri negli script:
 
-## Risultati Attesi
+- `-i, --input`: Percorso del file CSV di input
+- `-o, --output`: Directory dove salvare i risultati
+- `-j, --jobs`: Quali job eseguire (job1, job2)
+- `-e, --engines`: Quali engine utilizzare (core, sql)
+- `-s, --sizes`: Dimensioni del dataset da testare (es: 0.01, 0.05, 0.1, 0.25, 0.5, 1.0)
 
-Le prime 10 righe dell'output di ciascun job saranno salvate in `results/`.  
-Esempio: `results/mr_job1_10k_output_top10.txt`.
+## Risultati
 
-## Benchmark e Performance
-
-Il report finale includerà:  
-- Confronto tempi di esecuzione (locale e cluster).  
-- Test con dimensioni crescenti del dataset.  
-- Grafici e tabelle per i risultati.
+I risultati vengono salvati nella cartella `results/` in formato JSON e CSV, organizzati per tipo di job ed engine. Per i benchmark, vengono generati report dettagliati in formato testuale per facilitare il confronto delle prestazioni.

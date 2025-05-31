@@ -1,0 +1,74 @@
+[
+  {
+    "job_name": "job1",
+    "input_file": "results/mapreduce/samples/sample_1pct.csv",
+    "input_size_mb": 179.64946174621582,
+    "num_records": 29898,
+    "num_nodes": 8,
+    "execution_time_sec": 1.107896089553833,
+    "throughput_records_per_sec": 26986.28534020766,
+    "throughput_mb_per_sec": 162.1537104788983,
+    "output_path": "results/mapreduce/results/job1_sample_1pct/output.txt",
+    "dataset_size_pct": 0.01
+  },
+  {
+    "job_name": "job1",
+    "input_file": "results/mapreduce/samples/sample_5pct.csv",
+    "input_size_mb": 895.9461421966553,
+    "num_records": 149679,
+    "num_nodes": 8,
+    "execution_time_sec": 6.3950018882751465,
+    "throughput_records_per_sec": 23405.622486903012,
+    "throughput_mb_per_sec": 140.10099728654012,
+    "output_path": "results/mapreduce/results/job1_sample_5pct/output.txt",
+    "dataset_size_pct": 0.05
+  },
+  {
+    "job_name": "job1",
+    "input_file": "results/mapreduce/samples/sample_10pct.csv",
+    "input_size_mb": 1800.4696378707886,
+    "num_records": 300710,
+    "num_nodes": 8,
+    "execution_time_sec": 13.647444486618042,
+    "throughput_records_per_sec": 22034.161801856768,
+    "throughput_mb_per_sec": 131.92723660728083,
+    "output_path": "results/mapreduce/results/job1_sample_10pct/output.txt",
+    "dataset_size_pct": 0.1
+  },
+  {
+    "job_name": "job2",
+    "input_file": "results/mapreduce/samples/sample_1pct.csv",
+    "input_size_mb": 179.64946174621582,
+    "num_records": 29898,
+    "num_nodes": 8,
+    "execution_time_sec": 5.418736934661865,
+    "throughput_records_per_sec": 5517.521954009688,
+    "throughput_mb_per_sec": 33.15338314304533,
+    "output_path": "results/mapreduce/results/job2_sample_1pct/output.txt",
+    "dataset_size_pct": 0.01
+  },
+  {
+    "job_name": "job2",
+    "input_file": "results/mapreduce/samples/sample_5pct.csv",
+    "input_size_mb": 895.9461421966553,
+    "num_records": 149679,
+    "num_nodes": 8,
+    "execution_time_sec": 26.29263138771057,
+    "throughput_records_per_sec": 5692.811715679451,
+    "throughput_mb_per_sec": 34.07594047872398,
+    "output_path": "results/mapreduce/results/job2_sample_5pct/output.txt",
+    "dataset_size_pct": 0.05
+  },
+  {
+    "job_name": "job2",
+    "input_file": "results/mapreduce/samples/sample_10pct.csv",
+    "input_size_mb": 1800.4696378707886,
+    "num_records": 300710,
+    "num_nodes": 8,
+    "execution_time_sec": 52.09359812736511,
+    "throughput_records_per_sec": 5772.494333464653,
+    "throughput_mb_per_sec": 34.562205387863,
+    "output_path": "results/mapreduce/results/job2_sample_10pct/output.txt",
+    "dataset_size_pct": 0.1
+  }
+]

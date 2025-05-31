@@ -1,0 +1,37 @@
+MapReduce Scalability Benchmark Report
+====================================
+
+Date: 2025-05-30 20:01:34
+Input file: data/used_cars_cleaned.csv
+Number of simulated nodes: 8
+
+Summary by Job and Dataset Size:
+-------------------------------
+
+Job: job1
+| Dataset Size | Input Size (MB) | Records | Time (s) | Records/sec | MB/sec |
+|--------------|----------------|---------|----------|-------------|--------|
+|         1.00% |         179.65 |   29898 |     1.11 |    26986.29 | 162.15 |
+|         5.00% |         895.95 |  149679 |     6.40 |    23405.62 | 140.10 |
+|        10.00% |        1800.47 |  300710 |    13.65 |    22034.16 | 131.93 |
+
+Job: job2
+| Dataset Size | Input Size (MB) | Records | Time (s) | Records/sec | MB/sec |
+|--------------|----------------|---------|----------|-------------|--------|
+|         1.00% |         179.65 |   29898 |     5.42 |     5517.52 |  33.15 |
+|         5.00% |         895.95 |  149679 |    26.29 |     5692.81 |  34.08 |
+|        10.00% |        1800.47 |  300710 |    52.09 |     5772.49 |  34.56 |
+
+
+Scalability Analysis:
+---------------------
+
+Job job1:
+- Dataset size increased by a factor of 10.00x
+- Execution time increased by a factor of 12.32x
+- The job scales SUPER-linearly (poor scaling properties)
+
+Job job2:
+- Dataset size increased by a factor of 10.00x
+- Execution time increased by a factor of 9.61x
+- The job scales SUB-linearly (good scaling properties)

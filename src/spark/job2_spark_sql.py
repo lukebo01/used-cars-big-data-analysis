@@ -182,18 +182,35 @@ def main():
 
 
     # --- Salvataggio e Stampa ---
-    final_report_df.select("output_line").coalesce(1).write.mode("overwrite").text(dataframe_output_path_text)
-    print(f"Output DataFrame Job2 (come testo, con part-files) salvato in: {dataframe_output_path_text}")
+    print(f"Dataset size fraction: {args.dataset_size}")
+    if args.dataset_size < 0.5:
+        print(f"Dataset size < 0.5. Using coalesce(1) for DataFrame output and creating single aggregated file.")
+        final_report_df.select("output_line").coalesce(1).write.mode("overwrite").text(dataframe_output_path_text)
+        print(f"Output DataFrame Job2 (come testo, singolo part-file) salvato in: {dataframe_output_path_text}")
 
-    results_list = [row.output_line for row in final_report_df.collect()]
-    with open(single_file_output_path, 'w') as f:
-        for line in results_list:
-            f.write(line + '\n')
-    print(f"Output Job2 aggregato in singolo file salvato in: {single_file_output_path}")
+        # Questa operazione è molto costosa per dataset grandi
+        results_list = [row.output_line for row in final_report_df.collect()]
+        with open(single_file_output_path, 'w') as f:
+            for line in results_list:
+                f.write(line + '\n')
+        print(f"Output Job2 aggregato in singolo file salvato in: {single_file_output_path}")
+        
+        print("\n--- JOB 2 SPARK (DATAFRAME API) RESULTS (FIRST 10) ---")
+        for record_str in results_list[:10]:
+            print(record_str)
 
-    print("\n--- JOB 2 SPARK SQL (DATAFRAME API) RESULTS (FIRST 10) ---")
-    for record_str in results_list[:10]:
-        print(record_str)
+    else: # args.dataset_size >= 0.5
+        print(f"Dataset size >= 0.5. Writing DataFrame output as multiple part-files (no coalesce(1)) and skipping single aggregated file.")
+        final_report_df.select("output_line").write.mode("overwrite").text(dataframe_output_path_text)
+        print(f"Output DataFrame Job2 (come testo, con part-files) salvato in: {dataframe_output_path_text}")
+        print(f"Skipping creation of single aggregated file for large dataset size.")
+
+        # Per mostrare comunque un'anteprima senza fare collect() su tutto
+        print("\n--- JOB 2 SPARK (DATAFRAME API) RESULTS (FIRST 10 from execution) ---")
+        # take(10) è più sicuro di collect() per dataset grandi
+        preview_results = final_report_df.select("output_line").take(10)
+        for row in preview_results:
+            print(row.output_line)
 
     spark.stop()
 

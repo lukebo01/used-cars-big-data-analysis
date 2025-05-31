@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Definisci il percorso del dataset
-DATASET="data/samples/used_cars_1k.csv"
+DATASET="data/used_cars_cleaned.csv"
 
 # Crea directory per i risultati dei benchmark se non esiste
 RESULTS_DIR="results/mapreduce"
@@ -19,7 +19,7 @@ python3 src/mapreduce/run_benchmark.py \
     --input "$DATASET" \
     --output "$RESULTS_DIR" \
     --jobs job1 job2 \
-    --sizes 0.01 1.0 \
+    --sizes 0.01 0.05 0.1 \
     --nodes $NUM_CORES
 
 echo "Benchmark completato. I risultati sono disponibili in $RESULTS_DIR"

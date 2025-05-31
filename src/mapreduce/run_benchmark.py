@@ -6,32 +6,95 @@ import subprocess
 import argparse
 import json
 from datetime import datetime
-import pandas as pd
 import multiprocessing
+import os
+import random
+import shutil
 
-def create_sample_datasets(input_csv, output_dir, sizes=[0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 1.0]):
-    """Create sample datasets of different sizes from the original CSV"""
+def create_sample_datasets(input_csv, output_dir, sizes=[0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 1.0], random_seed=42):
+    """
+    Crea campioni del dataset di diverse dimensioni dal CSV originale senza usare pandas,
+    utilizzando un campionamento probabilistico riga per riga.
+    Il numero di righe nel campione sarà approssimativo.
+    Simula il random_state di pandas usando random.seed().
+    """
     print(f"Creating sample datasets in {output_dir}...")
     os.makedirs(output_dir, exist_ok=True)
-    
-    df = pd.read_csv(input_csv)
-    total_rows = len(df)
-    
+
+    # Imposta il seed per la riproducibilità, simile a random_state in pandas
+    random.seed(random_seed)
+
+    # Passo 1: Leggere l'header e contare il numero totale di righe DATI
+    header_line = None
+    total_data_rows = 0
+    try:
+        with open(input_csv, 'r', encoding='utf-8') as f_count:
+            header_line = f_count.readline() # Legge la prima riga (header)
+            if not header_line:
+                print(f"Error: Input CSV '{input_csv}' is empty or header could not be read.")
+                return {}
+            # Assicurarsi che l'header finisca con newline se non è l'unica riga
+            # header_line = header_line.rstrip('\r\n') + '\n' # Opzionale, readline() di solito la include
+
+            for _ in f_count: # Conta le righe rimanenti (righe dati)
+                total_data_rows += 1
+    except FileNotFoundError:
+        print(f"Error: Input CSV '{input_csv}' not found.")
+        return {}
+    except Exception as e:
+        print(f"Error reading or counting lines in '{input_csv}': {e}")
+        return {}
+
+    if total_data_rows == 0:
+        print(f"Info: '{input_csv}' contains a header and {total_data_rows} data rows. "
+              f"Sampled files for fractions < 1.0 will also contain only the header.")
+
     sample_paths = {}
-    for size in sizes:
-        n_rows = int(total_rows * size)
-        output_file = os.path.join(output_dir, f"sample_{int(size*100)}pct.csv")
+    for size_fraction in sizes:
+        output_file = os.path.join(output_dir, f"sample_{int(size_fraction*100)}pct.csv")
         
-        if size < 1.0:
-            # Take random sample
-            df.sample(n=n_rows, random_state=42).to_csv(output_file, index=False)
+        actual_data_rows_written = 0
+        log_message = ""
+
+        if size_fraction >= 1.0:
+            # Usa il dataset completo (copia il file originale)
+            try:
+                shutil.copy2(input_csv, output_file)
+                actual_data_rows_written = total_data_rows # Numero di righe DATI
+                log_message = (f"Created {output_file}: {actual_data_rows_written} data rows "
+                               f"(full dataset from {total_data_rows} original data rows).")
+            except Exception as e:
+                print(f"Error copying '{input_csv}' to '{output_file}': {e}")
+                continue # Salta al prossimo size_fraction
         else:
-            # Use full dataset
-            df.to_csv(output_file, index=False)
+            # Crea campione casuale riga per riga
+            try:
+                with open(input_csv, 'r', encoding='utf-8') as in_f, \
+                     open(output_file, 'w', encoding='utf-8') as out_f:
+                    
+                    # Scrivi l'header (già letto e memorizzato in header_line)
+                    out_f.write(header_line)
+                    
+                    # Salta l'header nel file di input per questa iterazione di lettura
+                    # (next(in_f) lo farebbe, ma dato che riapriamo il file, lo facciamo qui)
+                    _ = in_f.readline() # Consuma la riga dell'header da in_f
+                    
+                    # Campiona le righe di dati
+                    for line in in_f:
+                        if random.random() <= size_fraction:
+                            out_f.write(line)
+                            actual_data_rows_written += 1
+                
+                log_message = (f"Created {output_file}: {actual_data_rows_written} data rows "
+                               f"({size_fraction*100:.0f}% sample from {total_data_rows} original data rows).")
+
+            except Exception as e:
+                print(f"Error creating sample '{output_file}': {e}")
+                continue # Salta al prossimo size_fraction
             
-        sample_paths[size] = output_file
-        print(f"Created {output_file} with {n_rows} rows")
-    
+        sample_paths[size_fraction] = output_file
+        print(log_message)
+        
     return sample_paths
 
 def run_job(job_name, input_file, output_dir, num_nodes=2):

@@ -1,7 +1,0 @@
-Make: chevrolet	Models: [Model: suburban, Count: 1, MinPrice: 48988.00, MaxPrice: 48988.00, AvgPrice: 48988.00, Years: [2019]]
-Make: dodge	Models: [Model: challenger, Count: 1, MinPrice: 22989.00, MaxPrice: 22989.00, AvgPrice: 22989.00, Years: [2016]]
-Make: ford	Models: [Model: mustang, Count: 1, MinPrice: 23500.00, MaxPrice: 23500.00, AvgPrice: 23500.00, Years: [2017]]
-Make: infiniti	Models: [Model: g35, Count: 1, MinPrice: 9995.00, MaxPrice: 9995.00, AvgPrice: 9995.00, Years: [2007]]
-Make: land rover	Models: [Model: discovery sport, Count: 1, MinPrice: 56360.00, MaxPrice: 56360.00, AvgPrice: 56360.00, Years: [2017]]
-Make: lexus	Models: [Model: rx, Count: 1, MinPrice: 50935.00, MaxPrice: 50935.00, AvgPrice: 50935.00, Years: [2020]]
-Make: toyota	Models: [Model: corolla, Count: 2, MinPrice: 18119.00, MaxPrice: 23503.00, AvgPrice: 20811.00, Years: [2018, 2021]; Model: prius prime, Count: 1, MinPrice: 29995.00, MaxPrice: 29995.00, AvgPrice: 29995.00, Years: [2019]; Model: rav4, Count: 1, MinPrice: 17499.00, MaxPrice: 17499.00, AvgPrice: 17499.00, Years: [2016]]

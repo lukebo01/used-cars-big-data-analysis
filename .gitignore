@@ -1,2 +1,6 @@
 .venv/
 data/
+results/spark_core/
+results/spark_sql/
+results/mapreduce/samples/
+results/mapreduce/results/

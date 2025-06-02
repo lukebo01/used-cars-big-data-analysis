@@ -79,3 +79,22 @@ RUN DEL BENCHMARK COMPLETO (assicurati che il dataset completo sia stato caricat
 		-> aws s3 cp s3://used-cars-big-data-analysis-1748698020/scripts/full_benchmark_emr.py ./
 		-> chmod +x full_benchmark_emr.py
 2. python3 full_benchmark_emr.py
+
+
+
+
+# Esegui Job1 Spark
+aws emr add-steps --cluster-id j-2XGP9KTNXTHKC --steps '[{
+  "Name": "Test-Job1-Spark-MakeModel-Analysis",
+  "ActionOnFailure": "CONTINUE",
+  "Jar": "command-runner.jar",
+  "Args": [
+    "spark-submit",
+    "--deploy-mode", "cluster",
+    "--conf", "spark.sql.adaptive.enabled=true",
+    "--conf", "spark.sql.adaptive.coalescePartitions.enabled=true",
+    "s3://used-cars-big-data-analysis-1748698020/scripts/job1/spark/job1_spark.py",
+    "s3://used-cars-big-data-analysis-1748698020/data/used_cars_fake.csv",
+    "s3://used-cars-big-data-analysis-1748698020/output/test-spark-job1/"
+  ]
+}]'

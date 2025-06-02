@@ -1,0 +1,580 @@
+#cat > full_benchmark_emr.py << 'EOF'
+#!/usr/bin/env python3
+import subprocess
+import time
+import json
+import os
+import random
+from datetime import datetime
+
+# Configurazione
+BUCKET = "used-cars-big-data-analysis-1748698020"
+DATASET_FILE = "used_cars_filtered.csv"  # Il file che hai caricato
+REGION = "us-east-1"
+
+def run_command(cmd):
+    """Esegue un comando e restituisce l'output"""
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"Errore nel comando: {cmd}")
+        print(f"Errore: {result.stderr}")
+        return None
+    return result.stdout.strip()
+
+def get_active_cluster():
+    """Trova il cluster EMR attivo"""
+    cmd = 'aws emr list-clusters --active --query "Clusters[0].Id" --output text'
+    cluster_id = run_command(cmd)
+    if cluster_id and cluster_id != "None":
+        print(f"Trovato cluster attivo: {cluster_id}")
+        return cluster_id
+    return None
+
+def terminate_all_active_clusters():
+    """Termina tutti i cluster EMR attivi per evitare conflitti"""
+    print("Verificando cluster attivi...")
+    
+    # Ottieni lista cluster attivi
+    cmd = 'aws emr list-clusters --active --query "Clusters[].Id" --output text'
+    active_clusters = run_command(cmd)
+    
+    if not active_clusters or active_clusters == "None":
+        print("Nessun cluster attivo trovato")
+        return
+    
+    # Converte in lista
+    cluster_ids = active_clusters.split()
+    print(f"Trovati {len(cluster_ids)} cluster attivi: {cluster_ids}")
+    
+    # Termina tutti i cluster attivi
+    for cluster_id in cluster_ids:
+        print(f"Terminando cluster {cluster_id}...")
+        result = run_command(f"aws emr terminate-clusters --cluster-ids {cluster_id}")
+        if result is not None:
+            print(f"✓ Cluster {cluster_id} terminato")
+        else:
+            print(f"✗ Errore terminando cluster {cluster_id}")
+    
+    # Aspetta che tutti siano terminati
+    print("Aspettando che tutti i cluster siano terminati...")
+    max_wait = 10  # 10 minuti max
+    wait_count = 0
+    
+    while wait_count < max_wait:
+        cmd = 'aws emr list-clusters --active --query "Clusters[].Id" --output text'
+        remaining = run_command(cmd)
+        
+        if not remaining or remaining == "None":
+            print("✓ Tutti i cluster sono stati terminati")
+            break
+        
+        print(f"Aspettando terminazione... ({wait_count+1}/{max_wait})")
+        time.sleep(60)
+        wait_count += 1
+    
+    if wait_count >= max_wait:
+        print("⚠️  Timeout aspettando terminazione cluster")
+
+def create_cluster(instance_count):
+    """Crea un nuovo cluster EMR con configurazione più robusta"""
+    print(f"Creazione cluster con {instance_count} istanze...")
+    
+    # Usa configurazione più semplice e robusta per Learner Lab
+    cmd = f'''aws emr create-cluster \\
+            --name "benchmark-cluster-{instance_count}nodes" \\
+            --release-label emr-6.4.0 \\
+            --instance-type m5.xlarge \\
+            --instance-count {instance_count} \\
+            --applications Name=Hadoop Name=Spark \\
+            --ec2-attributes KeyName=vockey,InstanceProfile=EMR_EC2_DefaultRole \\
+            --service-role EMR_DefaultRole \\
+            --log-uri s3://{BUCKET}/logs/ \\
+            --enable-debugging \\
+            --query "ClusterId" --output text'''
+    
+    cluster_id = run_command(cmd)
+    if not cluster_id:
+        print("Errore nella creazione del cluster")
+        return None
+    
+    print(f"Cluster creato: {cluster_id}")
+    
+    # Aspetta che sia pronto con timeout
+    print("Aspettando che il cluster sia pronto...")
+    max_attempts = 25  # 25 minuti max per istanze piccole
+    attempts = 0
+    
+    while attempts < max_attempts:
+        state_cmd = f'aws emr describe-cluster --cluster-id {cluster_id} --query "Cluster.Status.State" --output text'
+        state = run_command(state_cmd)
+        print(f"Stato cluster: {state} (tentativo {attempts+1}/{max_attempts})")
+        
+        if state == "WAITING":
+            print("Cluster pronto!")
+            return cluster_id  # IMPORTANTE: ritorna cluster_id quando pronto
+        elif state in ["TERMINATED", "TERMINATING", "TERMINATED_WITH_ERRORS", "FAILED"]:
+            # Mostra l'errore dettagliato
+            error_cmd = f'aws emr describe-cluster --cluster-id {cluster_id} --query "Cluster.Status.StateChangeReason" --output json'
+            error = run_command(error_cmd)
+            print(f"Cluster fallito: {error}")
+            return None  # IMPORTANTE: ritorna None se fallito
+        
+        attempts += 1
+        time.sleep(60)  # Aspetta 1 minuto
+    
+    print("Timeout nella creazione del cluster")
+    return None  # IMPORTANTE: ritorna None se timeout
+
+def check_existing_samples():
+    """Controlla se i samples esistono già su S3"""
+    print("Controllo samples esistenti...")
+    
+    samples = [0.01, 0.05, 0.1, 0.5]
+    existing_samples = {}
+    missing_samples = []
+    
+    for sample_rate in samples:
+        sample_filename = f"sample_{int(sample_rate*100)}pct.csv"
+        
+        # Controlla se esiste su S3
+        cmd = f'aws s3 ls s3://{BUCKET}/data/{sample_filename}'
+        result = run_command(cmd)
+        
+        if result:
+            print(f"✓ Sample {sample_rate*100}% già esistente")
+            existing_samples[sample_rate] = sample_filename
+        else:
+            print(f"✗ Sample {sample_rate*100}% mancante")
+            missing_samples.append(sample_rate)
+    
+    return existing_samples, missing_samples
+
+def upload_sampling_scripts():
+    """Carica gli scripts di sampling su S3 se non esistono"""
+    print("Verificando scripts di sampling...")
+    
+    # Crea mapper se non esiste
+    mapper_exists = run_command(f'aws s3 ls s3://{BUCKET}/scripts/sampling/sampling_mapper.py')
+    if not mapper_exists:
+        print("Creando sampling mapper...")
+        
+        mapper_content = '''#!/usr/bin/env python3
+                            import sys
+                            import random
+
+                            # Leggi la percentuale di sampling dai parametri
+                            sample_rate = float(sys.argv[1]) if len(sys.argv) > 1 else 0.1
+                            random.seed(42)  # Per riproducibilità
+
+                            line_count = 0
+                            for line in sys.stdin:
+                                line_count += 1
+                                
+                                # Mantieni sempre l'header (prima riga)
+                                if line_count == 1:
+                                    print(line.strip())
+                                # Per le altre righe, applica il sampling
+                                elif random.random() <= sample_rate:
+                                    print(line.strip())
+                         '''
+        
+        with open("sampling_mapper.py", "w") as f:
+            f.write(mapper_content)
+        
+        run_command("chmod +x sampling_mapper.py")
+        run_command(f"aws s3 cp sampling_mapper.py s3://{BUCKET}/scripts/sampling/")
+        os.remove("sampling_mapper.py")
+    
+    # Crea reducer se non esiste
+    reducer_exists = run_command(f'aws s3 ls s3://{BUCKET}/scripts/sampling/sampling_reducer.py')
+    if not reducer_exists:
+        print("Creando sampling reducer...")
+        
+        reducer_content = '''#!/usr/bin/env python3
+                                import sys
+
+                                # Il reducer per il sampling è molto semplice: 
+                                # passa semplicemente tutte le righe che riceve dal mapper
+                                for line in sys.stdin:
+                                    print(line.strip())
+                         '''
+        
+        with open("sampling_reducer.py", "w") as f:
+            f.write(reducer_content)
+        
+        run_command("chmod +x sampling_reducer.py")
+        run_command(f"aws s3 cp sampling_reducer.py s3://{BUCKET}/scripts/sampling/")
+        os.remove("sampling_reducer.py")
+    
+    print("Scripts di sampling pronti!")
+
+def create_missing_samples_on_emr(missing_samples):
+    """Crea i samples mancanti usando MapReduce su EMR"""
+    if not missing_samples:
+        print("Tutti i samples esistono già!")
+        return {}
+    
+    print(f"Creazione {len(missing_samples)} samples su EMR...")
+    
+    # Assicurati che gli script di sampling esistano
+    upload_sampling_scripts()
+    
+    # Crea cluster per sampling (piccolo e economico)
+    sampling_cluster = create_cluster(3)
+    if not sampling_cluster:
+        print("Impossibile creare cluster per sampling!")
+        return {}
+    
+    created_samples = {}
+    
+    try:
+        for sample_rate in missing_samples:
+            sample_name = f"sample_{int(sample_rate*100)}pct.csv"
+            print(f"Creando sample {sample_rate*100}% su EMR...")
+            
+            # Pulisci output temporaneo
+            run_command(f"aws s3 rm s3://{BUCKET}/temp/sampling_{int(sample_rate*100)}pct/ --recursive")
+            
+            # Configura job MapReduce per sampling
+            step_config = f'''[{{
+              "Name": "Create-Sample-{int(sample_rate*100)}pct",
+              "ActionOnFailure": "CONTINUE",
+              "Jar": "command-runner.jar",
+              "Args": [
+                "hadoop-streaming",
+                "-files", "s3://{BUCKET}/scripts/sampling/sampling_mapper.py,s3://{BUCKET}/scripts/sampling/sampling_reducer.py",
+                "-mapper", "python3 sampling_mapper.py {sample_rate}",
+                "-reducer", "python3 sampling_reducer.py",
+                "-input", "s3://{BUCKET}/data/{DATASET_FILE}",
+                "-output", "s3://{BUCKET}/temp/sampling_{int(sample_rate*100)}pct/"
+              ]
+            }}]'''
+            
+            # Esegui step
+            cmd = f'aws emr add-steps --cluster-id {sampling_cluster} --steps \'{step_config}\''
+            result = run_command(cmd)
+            
+            if not result:
+                print(f"Errore nella creazione del sample {sample_rate*100}%")
+                continue
+                
+            step_data = json.loads(result)
+            step_id = step_data['StepIds'][0]
+            
+            # Monitora completamento
+            print(f"Monitoraggio sample {sample_rate*100}%...")
+            while True:
+                state_cmd = f'aws emr describe-step --cluster-id {sampling_cluster} --step-id {step_id} --query "Step.Status.State" --output text'
+                state = run_command(state_cmd)
+                
+                if state == "COMPLETED":
+                    break
+                elif state == "FAILED":
+                    print(f"Sample {sample_rate*100}% fallito!")
+                    break
+                
+                time.sleep(30)
+            
+            if state == "COMPLETED":
+                # Sposta nella cartella finale
+                run_command(f"aws s3 cp s3://{BUCKET}/temp/sampling_{int(sample_rate*100)}pct/part-00000 s3://{BUCKET}/data/{sample_name}")
+                run_command(f"aws s3 rm s3://{BUCKET}/temp/sampling_{int(sample_rate*100)}pct/ --recursive")
+                
+                created_samples[sample_rate] = sample_name
+                print(f"✓ Sample {sample_rate*100}% creato")
+    
+    finally:
+        # Termina il cluster di sampling
+        print("Terminando cluster di sampling...")
+        run_command(f"aws emr terminate-clusters --cluster-ids {sampling_cluster}")
+    
+    return created_samples
+
+def get_file_info(filename):
+    """Ottiene informazioni dettagliate su un file S3"""
+    cmd = f'aws s3api head-object --bucket {BUCKET} --key data/{filename}'
+    result = run_command(cmd)
+    
+    if result:
+        data = json.loads(result)
+        size_bytes = data['ContentLength']
+        size_mb = size_bytes / (1024 * 1024)
+        return size_mb, size_bytes
+    return 0, 0
+
+def estimate_records(size_mb):
+    """Stima il numero di record basandosi sulla dimensione del file"""
+    # Stima: circa 100-200 byte per record per questo dataset
+    avg_bytes_per_record = 150
+    total_bytes = size_mb * 1024 * 1024
+    estimated_records = int(total_bytes / avg_bytes_per_record)
+    return estimated_records
+
+def run_job_on_emr(cluster_id, job_name, input_file, output_folder, job_type):
+    """Esegue un job su EMR e restituisce i tempi"""
+    
+    # Elimina output precedente
+    run_command(f"aws s3 rm s3://{BUCKET}/output/{output_folder}/ --recursive")
+    
+    # Definisci i percorsi degli script
+    if job_type == "job1":
+        mapper_path = f"s3://{BUCKET}/scripts/job1/mapreduce/mapper.py"
+        reducer_path = f"s3://{BUCKET}/scripts/job1/mapreduce/reducer.py"
+    else:
+        mapper_path = f"s3://{BUCKET}/scripts/job2/mapreduce/mapper.py"
+        reducer_path = f"s3://{BUCKET}/scripts/job2/mapreduce/reducer.py"
+    
+    # Costruisci comando
+    step_config = f'''[{{
+      "Name": "{job_name}",
+      "ActionOnFailure": "CONTINUE",
+      "Jar": "command-runner.jar",
+      "Args": [
+        "hadoop-streaming",
+        "-files", "{mapper_path},{reducer_path}",
+        "-mapper", "python3 mapper.py",
+        "-reducer", "python3 reducer.py",
+        "-input", "s3://{BUCKET}/data/{input_file}",
+        "-output", "s3://{BUCKET}/output/{output_folder}/"
+      ]
+    }}]'''
+    
+    print(f"Avvio {job_name} con input {input_file}")
+    start_time = time.time()
+    
+    # Esegui il job
+    cmd = f'aws emr add-steps --cluster-id {cluster_id} --steps \'{step_config}\''
+    result = run_command(cmd)
+    
+    if not result:
+        return None
+    
+    # Estrai Step ID
+    step_data = json.loads(result)
+    step_id = step_data['StepIds'][0]
+    
+    # Monitora fino al completamento
+    while True:
+        state_cmd = f'aws emr describe-step --cluster-id {cluster_id} --step-id {step_id} --query "Step.Status.State" --output text'
+        state = run_command(state_cmd)
+        
+        if state == "COMPLETED":
+            break
+        elif state == "FAILED":
+            print(f"Job {job_name} fallito!")
+            return None
+        
+        time.sleep(30)
+    
+    end_time = time.time()
+    execution_time = end_time - start_time
+    
+    print(f"Job {job_name} completato in {execution_time:.2f} secondi")
+    return execution_time
+
+def generate_report(results):
+    """Genera il report nel formato richiesto"""
+    report_filename = f"emr_benchmark_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+    
+    with open(report_filename, "w") as f:
+        f.write("EMR MapReduce Scalability Benchmark Report\n")
+        f.write("==========================================\n\n")
+        f.write(f"Date: {datetime.now()}\n")
+        f.write(f"Input file: {DATASET_FILE}\n")
+        f.write(f"Bucket: s3://{BUCKET}\n\n")
+        
+        # Raggruppa risultati per numero di nodi
+        nodes_groups = {}
+        for result in results:
+            nodes = result['nodes']
+            if nodes not in nodes_groups:
+                nodes_groups[nodes] = []
+            nodes_groups[nodes].append(result)
+        
+        for nodes in sorted(nodes_groups.keys()):
+            f.write(f"Summary for {nodes} nodes:\n")
+            f.write("-------------------------------\n\n")
+            
+            # Job1 Table
+            f.write("Job: job1\n")
+            f.write("| Dataset Size | Input Size (MB) | Records | Time (s) | Records/sec | MB/sec |\n")
+            f.write("|--------------|----------------|---------|----------|-------------|--------|\n")
+            
+            job1_results = [r for r in nodes_groups[nodes] if r['job1_time'] is not None]
+            job1_results.sort(key=lambda x: x['sample_rate'])
+            
+            for result in job1_results:
+                dataset_pct = f"{result['sample_rate']*100:8.2f}%"
+                input_mb = f"{result['size_mb']:10.2f}"
+                records = f"{result['records']:7d}"
+                time_s = f"{result['job1_time']:8.2f}"
+                records_sec = f"{result['records']/result['job1_time']:11.2f}" if result['job1_time'] > 0 else "0.00"
+                mb_sec = f"{result['size_mb']/result['job1_time']:6.2f}" if result['job1_time'] > 0 else "0.00"
+                
+                f.write(f"|{dataset_pct} |{input_mb} |{records} |{time_s} |{records_sec} |{mb_sec} |\n")
+            
+            f.write("\n")
+            
+            # Job2 Table
+            f.write("Job: job2\n")
+            f.write("| Dataset Size | Input Size (MB) | Records | Time (s) | Records/sec | MB/sec |\n")
+            f.write("|--------------|----------------|---------|----------|-------------|--------|\n")
+            
+            job2_results = [r for r in nodes_groups[nodes] if r['job2_time'] is not None]
+            job2_results.sort(key=lambda x: x['sample_rate'])
+            
+            for result in job2_results:
+                dataset_pct = f"{result['sample_rate']*100:8.2f}%"
+                input_mb = f"{result['size_mb']:10.2f}"
+                records = f"{result['records']:7d}"
+                time_s = f"{result['job2_time']:8.2f}"
+                records_sec = f"{result['records']/result['job2_time']:11.2f}" if result['job2_time'] > 0 else "0.00"
+                mb_sec = f"{result['size_mb']/result['job2_time']:6.2f}" if result['job2_time'] > 0 else "0.00"
+                
+                f.write(f"|{dataset_pct} |{input_mb} |{records} |{time_s} |{records_sec} |{mb_sec} |\n")
+            
+            f.write("\n\n")
+        
+        # Analisi scalabilità
+        f.write("Scalability Analysis:\n")
+        f.write("---------------------\n\n")
+        
+        for nodes in sorted(nodes_groups.keys()):
+            f.write(f"Cluster with {nodes} nodes:\n")
+            
+            node_results = nodes_groups[nodes]
+            node_results.sort(key=lambda x: x['sample_rate'])
+            
+            if len(node_results) >= 2:
+                smallest = node_results[0]
+                largest = node_results[-1]
+                
+                data_factor = largest['sample_rate'] / smallest['sample_rate']
+                
+                if smallest['job1_time'] and largest['job1_time']:
+                    time1_factor = largest['job1_time'] / smallest['job1_time']
+                    scaling1 = "SUB-linearly (good)" if time1_factor < data_factor else "SUPER-linearly (poor)"
+                    f.write(f"Job1: Dataset increased {data_factor:.2f}x, time increased {time1_factor:.2f}x - scales {scaling1}\n")
+                
+                if smallest['job2_time'] and largest['job2_time']:
+                    time2_factor = largest['job2_time'] / smallest['job2_time']
+                    scaling2 = "SUB-linearly (good)" if time2_factor < data_factor else "SUPER-linearly (poor)"
+                    f.write(f"Job2: Dataset increased {data_factor:.2f}x, time increased {time2_factor:.2f}x - scales {scaling2}\n")
+            
+            f.write("\n")
+    
+    print(f"Report generato: {report_filename}")
+    return report_filename
+
+def main():
+    print("=== BENCHMARK EMR COMPLETO ===")
+    print(f"Data: {datetime.now()}")
+    print(f"Bucket: {BUCKET}")
+    
+    # Controlla se esiste un cluster attivo e termina se necessario
+    terminate_all_active_clusters()
+
+    # Controlla samples esistenti
+    existing_samples, missing_samples = check_existing_samples()
+    
+    # Crea samples mancanti usando EMR (SENZA SCARICARE IL DATASET!)
+    created_samples = create_missing_samples_on_emr(missing_samples)
+    
+    # Combina samples esistenti e creati
+    all_samples = {**existing_samples, **created_samples}
+
+    # Aggiungi dataset completo (100%) - usa file originale
+    all_samples[1.0] = DATASET_FILE
+    print(f"✓ Dataset completo (100%): {DATASET_FILE}")
+    
+    if not all_samples:
+        print("Nessun sample disponibile!")
+        return
+    
+    # Configurazione dei test
+    node_counts = [3, 5, 7]
+    
+    # Risultati
+    results = []
+    
+    for node_count in node_counts:
+        print(f"\n{'='*50}")
+        print(f"TESTING CON {node_count} NODI")
+        print(f"{'='*50}")
+
+        terminate_all_active_clusters()
+        
+        # Crea cluster per benchmark
+        cluster_id = create_cluster(node_count)
+        if not cluster_id:
+            print(f"Impossibile creare cluster con {node_count} nodi")
+            continue
+        
+        try:
+            # Testa tutti i samples
+            for sample_rate in sorted(all_samples.keys()):
+                sample_file = all_samples[sample_rate]
+                print(f"\n--- Testing sample {sample_rate*100}% ---")
+                
+                # Ottieni info file (SENZA SCARICARE!)
+                size_mb, size_bytes = get_file_info(sample_file)
+                records = estimate_records(size_mb)  # Stima invece di contare
+                
+                print(f"File: {sample_file} ({size_mb:.2f} MB, ~{records} records)")
+                
+                # Job1
+                time1 = run_job_on_emr(
+                    cluster_id, 
+                    f"Job1-{sample_rate*100}pct-{node_count}nodes", 
+                    sample_file, 
+                    f"job1-{sample_rate*100}pct-{node_count}nodes", 
+                    "job1"
+                )
+                
+                # Job2
+                time2 = run_job_on_emr(
+                    cluster_id, 
+                    f"Job2-{sample_rate*100}pct-{node_count}nodes", 
+                    sample_file, 
+                    f"job2-{sample_rate*100}pct-{node_count}nodes", 
+                    "job2"
+                )
+                
+                # Salva risultati
+                result = {
+                    'nodes': node_count,
+                    'sample_rate': sample_rate,
+                    'sample_file': sample_file,
+                    'size_mb': size_mb,
+                    'size_bytes': size_bytes,
+                    'records': records,
+                    'job1_time': time1,
+                    'job2_time': time2
+                }
+                results.append(result)
+                
+                print(f"Risultati per {sample_file} su {node_count} nodi:")
+                print(f"  Job1: {time1:.2f}s ({records/time1:.2f} rec/s)" if time1 else "  Job1: FAILED")
+                print(f"  Job2: {time2:.2f}s ({records/time2:.2f} rec/s)" if time2 else "  Job2: FAILED")
+        
+        finally:
+            # Termina il cluster
+            print(f"Terminando cluster {cluster_id}...")
+            run_command(f"aws emr terminate-clusters --cluster-ids {cluster_id}")
+    
+    # Genera report finale
+    report_file = generate_report(results)
+    
+    print(f"\n{'='*50}")
+    print("BENCHMARK COMPLETATO!")
+    print(f"Report salvato: {report_file}")
+    print(f"{'='*50}")
+
+    # Carica report su S3
+    s3_report_path = f"s3://{BUCKET}/reports/{report_file}"
+    run_command(f"aws s3 cp {report_file} {s3_report_path}")
+    print(f"Report caricato anche su: {s3_report_path}")
+
+if __name__ == "__main__":
+    main()
+#EOF

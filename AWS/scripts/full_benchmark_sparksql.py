@@ -1,10 +1,10 @@
-# Modifica il benchmark Spark per includere tutti i controlli del MapReduce
-#cat > full_benchmark_spark.py << 'EOF'
+# Crea il benchmark Spark SQL identico a quello Spark
+#cat > full_benchmark_sparksql.py << 'EOF'
 #!/usr/bin/env python3
 """
-Benchmark completo Spark Core per AWS EMR
-Testa Job1 e Job2 Spark con diversi sample e configurazioni cluster
-Include tutti i controlli del benchmark MapReduce
+Benchmark completo Spark SQL per AWS EMR
+Testa Job1 e Job2 Spark SQL con diversi sample e configurazioni cluster
+IDENTICO al benchmark Spark ma usa script SparkSQL
 """
 
 import subprocess
@@ -13,7 +13,7 @@ import json
 import os
 from datetime import datetime
 
-# Configurazione
+# Configurazione (stessa del benchmark Spark)
 BUCKET = "used-cars-big-data-analysis-1748698020"
 DATASET_FILE = "used_cars_filtered.csv"
 REGION = "us-east-1"
@@ -69,10 +69,10 @@ def terminate_all_active_clusters():
         print("⚠️  Timeout aspettando terminazione cluster")
 
 def create_cluster(instance_count):
-    """Crea un nuovo cluster EMR per Spark"""
-    print(f"Creazione cluster Spark con {instance_count} istanze...")
+    """Crea un nuovo cluster EMR per Spark SQL"""
+    print(f"Creazione cluster Spark SQL con {instance_count} istanze...")
     
-    cmd = f'aws emr create-cluster --name "spark-benchmark-{instance_count}nodes" --release-label emr-6.4.0 --instance-type m5.xlarge --instance-count {instance_count} --applications Name=Hadoop Name=Spark --ec2-attributes KeyName=vockey,InstanceProfile=EMR_EC2_DefaultRole --service-role EMR_DefaultRole --log-uri s3://{BUCKET}/logs/ --enable-debugging --query "ClusterId" --output text'
+    cmd = f'aws emr create-cluster --name "sparksql-benchmark-{instance_count}nodes" --release-label emr-6.4.0 --instance-type m5.xlarge --instance-count {instance_count} --applications Name=Hadoop Name=Spark --ec2-attributes KeyName=vockey,InstanceProfile=EMR_EC2_DefaultRole --service-role EMR_DefaultRole --log-uri s3://{BUCKET}/logs/ --enable-debugging --query "ClusterId" --output text'
     
     cluster_id = run_command(cmd)
     if not cluster_id:
@@ -106,7 +106,7 @@ def create_cluster(instance_count):
     return None
 
 def check_existing_samples():
-    """Controlla se i samples esistono già su S3 (stesso del MapReduce)"""
+    """Controlla se i samples esistono già su S3 (identico al benchmark Spark)"""
     print("Controllo samples esistenti...")
     
     samples = [0.01, 0.05, 0.1, 0.5]
@@ -138,24 +138,23 @@ def upload_sampling_scripts():
         print("Creando sampling mapper...")
         
         mapper_content = '''#!/usr/bin/env python3
-                            import sys
-                            import random
+        import sys
 
-                            # Leggi la percentuale di sampling dai parametri
-                            sample_rate = float(sys.argv[1]) if len(sys.argv) > 1 else 0.1
-                            random.seed(42)  # Per riproducibilità
+        sample_rate = float(sys.argv[1]) if len(sys.argv) > 1 else 0.1
 
-                            line_count = 0
-                            for line in sys.stdin:
-                                line_count += 1
-                                
-                                # Mantieni sempre l'header (prima riga)
-                                if line_count == 1:
-                                    print(line.strip())
-                                # Per le altre righe, applica il sampling
-                                elif random.random() <= sample_rate:
-                                    print(line.strip())
-                         '''
+        for line in sys.stdin:
+            line = line.strip()
+            
+            if line.startswith('make_name,'):
+                print(line)
+                continue
+            
+            line_hash = abs(hash(line)) % 1000
+            threshold = int(sample_rate * 1000)
+            
+            if line_hash < threshold:
+                print(line)
+        '''
         
         with open("sampling_mapper.py", "w") as f:
             f.write(mapper_content)
@@ -186,6 +185,7 @@ def upload_sampling_scripts():
         os.remove("sampling_reducer.py")
     
     print("Scripts di sampling pronti!")
+
 
 def create_missing_samples_on_emr(missing_samples):
     """Crea i samples mancanti usando MapReduce su EMR"""
@@ -342,7 +342,7 @@ def create_missing_samples_on_emr(missing_samples):
     return created_samples
 
 def get_file_info(filename):
-    """Ottiene informazioni su un file S3"""
+    """Ottiene informazioni su un file S3 (identico)"""
     cmd = f'aws s3api head-object --bucket {BUCKET} --key data/{filename}'
     result = run_command(cmd)
     
@@ -354,51 +354,42 @@ def get_file_info(filename):
     return 0, 0
 
 def estimate_records(size_mb):
-    """Stima il numero di record"""
+    """Stima il numero di record (identico)"""
     avg_bytes_per_record = 150
     total_bytes = size_mb * 1024 * 1024
     estimated_records = int(total_bytes / avg_bytes_per_record)
     return estimated_records
 
-def run_spark_job_on_emr(cluster_id, job_name, input_file, output_folder, job_type):
-    """Esegue un job Spark su EMR"""
+def run_sparksql_job_on_emr(cluster_id, job_name, input_file, output_folder, job_type):
+    """Esegue un job Spark SQL su EMR (CAMBIATO: usa script sparksql)"""
     
     run_command(f"aws s3 rm s3://{BUCKET}/output/{output_folder}/ --recursive")
     
     if job_type == "job1":
-        script_path = f"s3://{BUCKET}/scripts/job1/spark/job1_spark.py"
+        script_path = f"s3://{BUCKET}/scripts/job1/sparksql/job1_sparksql.py"
     else:
-        script_path = f"s3://{BUCKET}/scripts/job2/spark/job2_spark.py"
+        script_path = f"s3://{BUCKET}/scripts/job2/sparksql/job2_sparksql.py"
     
     input_path = f"s3://{BUCKET}/data/{input_file}"
     output_path = f"s3://{BUCKET}/output/{output_folder}/"
     
-    step_config = f'''[{{
-      "Name": "{job_name}",
-      "ActionOnFailure": "CONTINUE",
-      "Jar": "command-runner.jar",
-      "Args": [
-        "spark-submit",
-        "--deploy-mode", "cluster",
-        "--conf", "spark.sql.adaptive.enabled=true",
-        "--conf", "spark.sql.adaptive.coalescePartitions.enabled=true",
-        "{script_path}",
-        "{input_path}",
-        "{output_path}"
-      ]
-    }}]'''
+    step_config = f'[{{"Name": "{job_name}", "ActionOnFailure": "CONTINUE", "Jar": "command-runner.jar", "Args": ["spark-submit", "--deploy-mode", "cluster", "--conf", "spark.sql.adaptive.enabled=true", "--conf", "spark.sql.adaptive.coalescePartitions.enabled=true", "{script_path}", "{input_path}", "{output_path}"]}}]'
     
-    print(f"Avvio {job_name} Spark con input {input_file}")
+    print(f"Avvio {job_name} Spark SQL con input {input_file}")
     start_time = time.time()
     
-    cmd = f'aws emr add-steps --cluster-id {cluster_id} --steps \'{step_config}\''
+    cmd = f"aws emr add-steps --cluster-id {cluster_id} --steps '{step_config}'"
     result = run_command(cmd)
     
     if not result:
         return None
     
-    step_data = json.loads(result)
-    step_id = step_data['StepIds'][0]
+    try:
+        step_data = json.loads(result)
+        step_id = step_data['StepIds'][0]
+    except (json.JSONDecodeError, KeyError, IndexError) as e:
+        print(f"Errore parsing step result: {e}")
+        return None
     
     while True:
         state_cmd = f'aws emr describe-step --cluster-id {cluster_id} --step-id {step_id} --query "Step.Status.State" --output text'
@@ -407,7 +398,7 @@ def run_spark_job_on_emr(cluster_id, job_name, input_file, output_folder, job_ty
         if state == "COMPLETED":
             break
         elif state == "FAILED":
-            print(f"Job {job_name} Spark fallito!")
+            print(f"Job {job_name} Spark SQL fallito!")
             return None
         
         time.sleep(30)
@@ -415,16 +406,16 @@ def run_spark_job_on_emr(cluster_id, job_name, input_file, output_folder, job_ty
     end_time = time.time()
     execution_time = end_time - start_time
     
-    print(f"Job {job_name} Spark completato in {execution_time:.2f} secondi")
+    print(f"Job {job_name} Spark SQL completato in {execution_time:.2f} secondi")
     return execution_time
 
-def generate_spark_report(results):
-    """Genera il report per Spark (con analisi scalabilità)"""
-    report_filename = f"spark_benchmark_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+def generate_sparksql_report(results):
+    """Genera il report per Spark SQL (CAMBIATO: titolo e nomi)"""
+    report_filename = f"sparksql_benchmark_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
     
     with open(report_filename, "w") as f:
-        f.write("Spark Core Scalability Benchmark Report\n")
-        f.write("=======================================\n\n")
+        f.write("Spark SQL Scalability Benchmark Report\n")
+        f.write("======================================\n\n")
         f.write(f"Date: {datetime.now()}\n")
         f.write(f"Input file: {DATASET_FILE}\n")
         f.write(f"Bucket: s3://{BUCKET}\n\n")
@@ -437,10 +428,10 @@ def generate_spark_report(results):
             nodes_groups[nodes].append(result)
         
         for nodes in sorted(nodes_groups.keys()):
-            f.write(f"Summary for {nodes} nodes (Spark):\n")
+            f.write(f"Summary for {nodes} nodes (Spark SQL):\n")
             f.write("----------------------------------\n\n")
             
-            f.write("Job: job1_spark\n")
+            f.write("Job: job1_sparksql\n")
             f.write("| Dataset Size | Input Size (MB) | Records | Time (s) | Records/sec | MB/sec |\n")
             f.write("|--------------|----------------|---------|----------|-------------|--------|\n")
             
@@ -459,7 +450,7 @@ def generate_spark_report(results):
             
             f.write("\n")
             
-            f.write("Job: job2_spark\n")
+            f.write("Job: job2_sparksql\n")
             f.write("| Dataset Size | Input Size (MB) | Records | Time (s) | Records/sec | MB/sec |\n")
             f.write("|--------------|----------------|---------|----------|-------------|--------|\n")
             
@@ -478,7 +469,7 @@ def generate_spark_report(results):
             
             f.write("\n\n")
         
-        # Analisi scalabilità (stesso del MapReduce)
+        # Analisi scalabilità (identica)
         f.write("Scalability Analysis:\n")
         f.write("---------------------\n\n")
         
@@ -506,15 +497,15 @@ def generate_spark_report(results):
             
             f.write("\n")
     
-    print(f"Report Spark generato: {report_filename}")
+    print(f"Report Spark SQL generato: {report_filename}")
     return report_filename
 
 def main():
-    print("=== BENCHMARK SPARK COMPLETO ===")
+    print("=== BENCHMARK SPARK SQL COMPLETO ===")
     print(f"Data: {datetime.now()}")
     print(f"Bucket: {BUCKET}")
     
-    # TUTTI I CONTROLLI DEL MAPREDUCE:
+    # TUTTI I CONTROLLI IDENTICI AL BENCHMARK SPARK:
     
     # 1. Termina cluster esistenti
     terminate_all_active_clusters()
@@ -539,7 +530,7 @@ def main():
     
     for node_count in node_counts:
         print(f"\n{'='*50}")
-        print(f"TESTING SPARK CON {node_count} NODI")
+        print(f"TESTING SPARK SQL CON {node_count} NODI")
         print(f"{'='*50}")
 
         # 5. Termina cluster prima di ogni nuovo test
@@ -553,26 +544,26 @@ def main():
         try:
             for sample_rate in sorted(all_samples.keys()):
                 sample_file = all_samples[sample_rate]
-                print(f"\n--- Testing Spark sample {sample_rate*100}% ---")
+                print(f"\n--- Testing Spark SQL sample {sample_rate*100}% ---")
                 
                 size_mb, size_bytes = get_file_info(sample_file)
                 records = estimate_records(size_mb)
                 
                 print(f"File: {sample_file} ({size_mb:.2f} MB, ~{records} records)")
                 
-                time1 = run_spark_job_on_emr(
+                time1 = run_sparksql_job_on_emr(
                     cluster_id, 
-                    f"Job1Spark-{sample_rate*100}pct-{node_count}nodes", 
+                    f"Job1SparkSQL-{sample_rate*100}pct-{node_count}nodes", 
                     sample_file, 
-                    f"spark/job1-{sample_rate*100}pct-{node_count}nodes", 
+                    f"sparksql/job1-{sample_rate*100}pct-{node_count}nodes", 
                     "job1"
                 )
                 
-                time2 = run_spark_job_on_emr(
+                time2 = run_sparksql_job_on_emr(
                     cluster_id, 
-                    f"Job2Spark-{sample_rate*100}pct-{node_count}nodes", 
+                    f"Job2SparkSQL-{sample_rate*100}pct-{node_count}nodes", 
                     sample_file, 
-                    f"spark/job2-{sample_rate*100}pct-{node_count}nodes", 
+                    f"sparksql/job2-{sample_rate*100}pct-{node_count}nodes", 
                     "job2"
                 )
                 
@@ -588,7 +579,7 @@ def main():
                 }
                 results.append(result)
                 
-                print(f"Risultati Spark per {sample_file} su {node_count} nodi:")
+                print(f"Risultati Spark SQL per {sample_file} su {node_count} nodi:")
                 print(f"  Job1: {time1:.2f}s ({records/time1:.2f} rec/s)" if time1 else "  Job1: FAILED")
                 print(f"  Job2: {time2:.2f}s ({records/time2:.2f} rec/s)" if time2 else "  Job2: FAILED")
         
@@ -597,10 +588,10 @@ def main():
             print(f"Terminando cluster {cluster_id}...")
             run_command(f"aws emr terminate-clusters --cluster-ids {cluster_id}")
     
-    report_file = generate_spark_report(results)
+    report_file = generate_sparksql_report(results)
     
     print(f"\n{'='*50}")
-    print("BENCHMARK SPARK COMPLETATO!")
+    print("BENCHMARK SPARK SQL COMPLETATO!")
     print(f"Report salvato: {report_file}")
     print(f"{'='*50}")
 

@@ -83,7 +83,7 @@ RUN DEL BENCHMARK COMPLETO (assicurati che il dataset completo sia stato caricat
 
 
 
-# Esegui Job1 Spark
+# Esegui Spark/SparkSQL
 aws emr add-steps --cluster-id j-2XGP9KTNXTHKC --steps '[{
   "Name": "Test-Job1-Spark-MakeModel-Analysis",
   "ActionOnFailure": "CONTINUE",
@@ -98,3 +98,9 @@ aws emr add-steps --cluster-id j-2XGP9KTNXTHKC --steps '[{
     "s3://used-cars-big-data-analysis-1748698020/output/test-spark-job1/"
   ]
 }]'
+
+# Monitora l'esecuzione dei job
+watch -n 10 'aws emr describe-step --cluster-id j-X64BGHVG22L6 --step-id s-1030081PSYFYFT67XNK --query "Step.Status.State"'
+
+# Visualizza i risultati di Job1 Spark SQL
+aws s3 cp s3://used-cars-big-data-analysis-1748698020/output/test-sparksql-job1/part-00000-3d96b54c-24b8-44ae-aa28-baa167d932cc-c000.txt - | head -10

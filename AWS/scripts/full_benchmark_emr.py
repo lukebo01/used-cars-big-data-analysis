@@ -276,15 +276,87 @@ def create_missing_samples_on_emr(missing_samples):
                 time.sleep(30)
             
             if state == "COMPLETED":
-                # Sposta nella cartella finale
-                run_command(f"aws s3 cp s3://{BUCKET}/temp/sampling_{int(sample_rate*100)}pct/part-00000 s3://{BUCKET}/data/{sample_name}")
-                run_command(f"aws s3 rm s3://{BUCKET}/temp/sampling_{int(sample_rate*100)}pct/ --recursive")
+                print(f"Unendo tutte le parti per sample {sample_rate*100}%...")
                 
-                created_samples[sample_rate] = sample_name
-                print(f"✓ Sample {sample_rate*100}% creato")
+                # Lista tutti i file part-* nella cartella temporanea
+                list_cmd = f'aws s3 ls s3://{BUCKET}/temp/sampling_{int(sample_rate*100)}pct/'
+                file_list = run_command(list_cmd)
+                
+                if file_list:
+                    # Filtra solo i file part-* (non cartelle)
+                    part_files = []
+                    for line in file_list.split('\n'):
+                        if line.strip() and 'part-' in line and not line.strip().endswith('/'):
+                            # Estrae il nome del file (ultima colonna)
+                            parts = line.strip().split()
+                            if len(parts) >= 4:  # Data, ora, dimensione, nome
+                                filename = parts[-1]
+                                if filename.startswith('part-') and not filename.endswith('/'):
+                                    part_files.append(filename)
+                    
+                    if part_files:
+                        print(f"Trovati {len(part_files)} file part: {sorted(part_files)}")
+                        
+                        # Scarica e concatena tutti i file part-* in ordine
+                        all_content = []
+                        header_written = False
+                        
+                        for i, part_file in enumerate(sorted(part_files)):
+                            temp_name = f"temp_part_{i}_{int(sample_rate*100)}pct.csv"
+                            download_cmd = f'aws s3 cp s3://{BUCKET}/temp/sampling_{int(sample_rate*100)}pct/{part_file} {temp_name}'
+                            
+                            if run_command(download_cmd):
+                                try:
+                                    with open(temp_name, 'r') as f:
+                                        for line_num, line in enumerate(f):
+                                            line = line.strip()
+                                            if not line:
+                                                continue
+                                            
+                                            # Gestisci header: solo dal primo file
+                                            if line.startswith('make_name,'):
+                                                if not header_written:
+                                                    all_content.append(line)
+                                                    header_written = True
+                                                # Skip header duplicati
+                                            else:
+                                                all_content.append(line)
+                                    
+                                    # Rimuovi file temporaneo
+                                    os.remove(temp_name)
+                                except Exception as e:
+                                    print(f"Errore leggendo {temp_name}: {e}")
+                                    if os.path.exists(temp_name):
+                                        os.remove(temp_name)
+                        
+                        # Scrivi il file finale concatenato
+                        if all_content:
+                            with open(sample_name, 'w') as f:
+                                for line in all_content:
+                                    f.write(line + '\n')
+                            
+                            # Carica il file finale su S3
+                            upload_cmd = f'aws s3 cp {sample_name} s3://{BUCKET}/data/{sample_name}'
+                            if run_command(upload_cmd):
+                                print(f"✓ Sample {sample_rate*100}% creato da {len(part_files)} parti ({len(all_content)} righe totali)")
+                                created_samples[sample_rate] = sample_name
+                            else:
+                                print(f"✗ Errore caricamento sample {sample_rate*100}%")
+                            
+                            # Pulisci file locale
+                            if os.path.exists(sample_name):
+                                os.remove(sample_name)
+                        else:
+                            print(f"✗ Nessun contenuto trovato per sample {sample_rate*100}%")
+                    else:
+                        print(f"✗ Nessun file part-* valido trovato per sample {sample_rate*100}%")
+                else:
+                    print(f"✗ Cartella temporanea vuota per sample {sample_rate*100}%")
+                
+                # Pulisci cartella temporanea
+                run_command(f"aws s3 rm s3://{BUCKET}/temp/sampling_{int(sample_rate*100)}pct/ --recursive")
     
     finally:
-        # Termina il cluster di sampling
         print("Terminando cluster di sampling...")
         run_command(f"aws emr terminate-clusters --cluster-ids {sampling_cluster}")
     
